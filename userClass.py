@@ -239,6 +239,7 @@ class user:
         
     def sortAllData(username):
         import dbConnection
+        import datetime
         from datetime import date
         #initialise variablaes
         global emissionValues
@@ -262,8 +263,42 @@ class user:
         #print(vehicleResults)
         #print(applianceResults)
         data = applianceResults + vehicleResults
+        #print(data)
         #print(f"The combined results are: {data}")
         
+        """
+        This section of code will merge any duplicate dates into one combined emission value
+        """
+        from collections import defaultdict
+        
+        non_duplicates = []
+        duplicates = []
+        
+        grouped_date = defaultdict(list)
+        for value, dates in data:
+            grouped_date[dates].append((value, dates))
+            
+        for items in grouped_date.values():
+            if len(items) > 1:
+                duplicates.extend(items)
+            else:
+                non_duplicates.extend(items)
+                
+        print(f"\nDuplicates: {duplicates}")
+        print(f"\nNon-duplicates: {non_duplicates}")
+        
+        
+        cleaned_duplicates = []
+        added_emissions = defaultdict(float)
+        
+        for value, dates in duplicates:
+            added_emissions[dates] += value
+            
+        cleaned_duplicates = [(total, date) for date, total in added_emissions.items()]
+        print(f"\nCleaned duplicates = {cleaned_duplicates}")
+            
+        #now concatenate the non-duplicated and cleaned duplicated data together into one list
+        data = cleaned_duplicates + non_duplicates
         #Sort the new list into chronological order before splitting and passing to graph function
         sorted_data = sorted(data, key=lambda x: x[1])
         #print(f"\nThe sorted data is: {sorted_data}")
@@ -272,7 +307,7 @@ class user:
         
         emissionValues = [item[0] for item in sorted_data] #iteration keeps emissions in date order
         emissionDates = [item[1] for item in sorted_data]
-        emissionDates = [date.isoformat(item) for item in emissionDates] #strip datetime text from date]
+        emissionDates = [date.isoformat(item) for item in emissionDates] #strip datetime text from date
         
         #print(f"\nThe emission values are: {emissionValues}")
         #print(f"\nThe emission dates are: {emissionDates}")
