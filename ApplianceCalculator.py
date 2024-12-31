@@ -344,10 +344,25 @@ def retrieveAverage(username):
             total_daily_emissions = row[14]
             
             upload_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, games_console_hours, kettle_uses, other_hours, total_daily_emissions)
-
-
+        
     else:
         createEmissionCalculation(username)
+        
+    """ Check if user wants to do another upload """
+    repeat_question = [
+    inquirer.List ('repeat_input',
+               message = "Would you like to log more appliance emissions?",
+               choices = [ "Yes", "No"],
+        ),
+    ]
+
+    repeat_answer = inquirer.prompt(repeat_question)
+    
+    choice = (repeat_answer['repeat_input'])
+    if choice == "Yes":
+        retrieveAverage(username)
+    else:
+        exit
         
         
 username = "Admin"
