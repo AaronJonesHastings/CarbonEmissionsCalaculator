@@ -27,12 +27,14 @@ This will be called by the check_car function
 
 def carEmissionsCalculation(username, car_reg, car, carType): #CREATE CHECKS FOR SQL INJECTION SAFETY
         if car == 1:
+            import inquirer
+            import datetime
             carEmission = f"{petrol_emission_dict[carType]['emission_value']}" #retrieve emission value from nested dictionary
             carEmission = float(carEmission) #store dictionary value as a float
 
             #get user input for minutes driven
 
-            minutes = input(f"How many minutes have you driven {car_reg} today?\n") #CREATE CODE TO CONFIRM THIS IS A FLOAT. CREATE LENGTH CHECK
+            minutes = input(f"How many minutes have you driven {car_reg} for this drive?\n") #CREATE CODE TO CONFIRM THIS IS A FLOAT. CREATE LENGTH CHECK
             minutes = float(minutes) #convert user input to float for later manipulation
             
             global petrolCarEmissionsValue 
@@ -41,14 +43,29 @@ def carEmissionsCalculation(username, car_reg, car, carType): #CREATE CHECKS FOR
             print(f"Carbon emission output for your drive of {car_reg} is {emissions}kgCO2e")
             petrolCarEmissionsValue = emissions
             print(petrolCarEmissionsValue)
-            today = date.today()
+            date_question = [
+            inquirer.List('Date of Emission',
+                          message = "Was ths emission from today?",
+                          choices = [ "Yes","No"],
+                ),
+            ]
+    
+            date_answer = inquirer.prompt(date_question)
+    
+            choice = date_answer['Date of Emission']
+     
+            if choice == "Yes":
+                date_of_emission = date.today()
+            else:
+                date_of_emission = input("Please input the date of these emissions: ")
+                date_of_emission = datetime.datetime.strptime(date_of_emission, "%d/%m/%Y")
             """
             Now establish details to be passed to mysql, including: username, cartype,
             reg number, emissions
             """
             mycursor = dbConnection.db.cursor()
             sql = "INSERT INTO car_emissions (user, date, vehicle, value) VALUES (%s, %s, %s, %s)"
-            val = (username, today, car_reg, petrolCarEmissionsValue)
+            val = (username, date_of_emission, car_reg, petrolCarEmissionsValue)
             mycursor.execute(sql, val)
             dbConnection.db.commit()
             print(mycursor.rowcount, "record inserted")
