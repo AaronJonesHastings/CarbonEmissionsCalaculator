@@ -164,11 +164,13 @@ class user:
         
     def totalGraphing(username, totalEmissions, totalEmissionsDates):
         import matplotlib.pyplot as plt
+        from matplotlib import style
         #separate out dates and floats in the emission lists returned from retrieveEmissions function
         plt.plot (totalEmissionsDates, totalEmissions)
         plt.title("Total Emissions Trending")
         plt.xlabel("Date")
-        plt.ylabel("Co2 Emissions")
+        plt.ylabel("Co2 Emissions Per Day (kg)")
+        style.use("ggplot")
         plt.grid(True)
         plt.show()
     
