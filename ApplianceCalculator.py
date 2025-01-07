@@ -12,15 +12,15 @@ for the UK, taken from the UK government for
 """
 ukIntensity = 0.207074288590604
 
-def upload_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, games_console_hours, kettle_uses, other_hours, total_daily_emissions):
+def upload_average(oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emissions):
     """
     Receives information from rerieve average and uploads to the mysql server
     using a similar method to CreateDailyAverage.py
     """
     
-    oven_emission = appliances["oven"]['emission_value'] #retrieve emission value from nested dictionary
     """ Oven Calculation"""
-    float(oven_emission)
+    oven_emission = f"{appliances[oven_type]['emission_value']}" #retrieve emission value from nested dictionary
+    oven_emission = float(oven_emission)
     oven = float(oven)
     total_oven_emissions = oven*oven_emission #multiply oven (hours) with oven_emission (kwh)
     print(f"Oven emissions = {total_oven_emissions}")
@@ -87,6 +87,13 @@ def upload_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours
     dryer = dryer_emission*dryer_hours
     print(f"Dryer emissions = {dryer}")
     
+    """Dishwasher Calculation"""
+    dishwasher_emission = f"{appliances["dishwasher"]['emission_value']}"
+    dishwasher_hours = float(dishwasher_hours)
+    dishwasher_emission = float(dishwasher_emission)
+    dishwasher = dishwasher_hours*dishwasher_emission
+    print(f"Dishwasher emission = {dishwasher}")
+    
     """Kettle Calculation"""
     kettle_emission = f"{appliances["kettle_use"]['emissions_value']}"
     kettle_uses = float(kettle_uses)
@@ -101,7 +108,7 @@ def upload_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours
     other = other_emissions*other_hours
     print(f"Other emissions = {other}")
     
-    total_emissions_calc = total_oven_emissions + fridge_emission + total_bulb_emission + heating_emission + phones + pc + tv + console + washer + dryer + kettle + other
+    total_emissions_calc = total_oven_emissions + fridge_emission + total_bulb_emission + heating_emission + phones + pc + tv + console + washer + dryer + dishwasher + kettle + other
     total_emissions_calc = float(total_emissions_calc)
     print(f"The total emissions value is {total_emissions_calc}")
     
@@ -128,9 +135,9 @@ def upload_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours
     result = cursor.fetchone() #store restult in variable
     if result:
         #check if user already has an entry in the daily_averages tables
-        sql = "INSERT INTO appliance_logs (total_emissions, date, oven, lighting, fridge, heating, phones, pc, tv, games_console, washer, dryer, kettle, other, user) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        val = (total_emissions_calc, date_of_emission, total_oven_emissions, total_bulb_emission, fridge_emission, heating_emission, phones, pc, tv, console, washer, dryer, kettle, other, username )
-        cursor.execute(sql, val)
+        sql = "INSERT INTO appliance_logs (total_emissions, date, oven, lighting, fridge, heating, phones, pc, tv, games_console, washer, dryer, dishwasher, kettle, other, user) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+        val = (total_emissions_calc, date_of_emission, total_oven_emissions, total_bulb_emission, fridge_emission, heating_emission, phones, pc, tv, console, washer, dryer, dishwasher, kettle, other, username )
+        cursor.execute(sql, val,)
         dbConnection.db.commit()
         print(cursor.rowcount, "record inserted")
     else:
@@ -163,7 +170,7 @@ def createEmissionCalculation(username):
             date_of_emission = input("Please input the date of these emissions: ")
             date_of_emission = datetime.datetime.strptime(date_of_emission, "%d/%m/%Y")
      
-        sql = "SELECT rooms, fridge_size, bulb_type FROM daily_averages WHERE user = %s" #retrieve basline data for dictionary reference
+        sql = "SELECT rooms, fridge_size, bulb_type , oven_type FROM daily_averages WHERE user = %s" #retrieve basline data for dictionary reference
         val = username
         cursor.execute(sql, (val,))
         result = cursor.fetchall()
@@ -172,6 +179,7 @@ def createEmissionCalculation(username):
         rooms = row[0]
         fridge_size = row[1]
         bulb_type = row[2]
+        oven_type = row[3]
         #begin collecting user input    
         oven = input("For how many hours have you used your oven/stove? ")
         hours_lit = input("For how many hours did you light your house for? ")
@@ -181,6 +189,7 @@ def createEmissionCalculation(username):
         hours_tv = input("For how many hours was a TV on in your house? ")
         hours_washer = input("How many hours was a washing machine used for in your house? ")
         hours_dryer = input("How many hours was a dryer used for in your house? ")
+        hours_dishwasher = input("How many hours was a dishwasher used for in your house?")
         hours_console = input("For how many hours was a games console used in your house? ")
         kettle_uses = input("How mnay times was a kettle boiled in your house? ")
         hours_other = input("Cummulatively, for how many hours were other appliances used in your house? ")
@@ -189,10 +198,10 @@ def createEmissionCalculation(username):
 
         """Oven Calculation"""
         oven = float(oven)
-        oven_emission = appliances["oven"]['emission_value']
+        oven_emission = f"{appliances[oven_type]['emission_value']}"
         oven_emission = float(oven_emission)
         total_oven = oven*oven_emission
-
+        
         """Lighting Calclulation"""
         rooms = float(rooms) #retrieved from earlier sql query
         bulb_emission = f"{appliances[bulb_type]['emission_value']}"
@@ -245,6 +254,12 @@ def createEmissionCalculation(username):
         hours_dryer = float(hours_dryer)
         dryer_emission = float(dryer_emission)
         total_dryer = hours_dryer*dryer_emission
+        
+        """Dishwasher Calculation"""
+        dishwasher_emission = f"{appliances["dishwasher"]['emission_value']}"
+        hours_dishwasher = float(hours_dishwasher)
+        dishwasher_emission = float(dishwasher_emission)
+        total_dishwasher = hours_dishwasher*dishwasher_emission
 
         """Kettle Calculation"""
         kettle_emission = f"{appliances["kettle_use"]['emissions_value']}"
@@ -259,8 +274,9 @@ def createEmissionCalculation(username):
         total_other = hours_other*other_emissions
 
         """Final Calculation"""
-        final_emissions = total_oven + total_bulb + total_fridge + total_heating + total_phones + total_tv + total_console + total_washer + total_dryer + total_kettle + total_other #adds all final calculations above
-        
+        final_emissions = total_oven + total_bulb + total_fridge + total_heating + total_phones + total_tv + total_console + total_washer + total_dryer + total_dishwasher + total_kettle + total_other #adds all final calculations above
+        print(type(final_emissions))
+     
         """Import into SQL"""
         sql = "SELECT total_emissions FROM appliance_logs WHERE user = %s AND date = %s"
         val = (username, date_of_emission)
@@ -279,8 +295,8 @@ def createEmissionCalculation(username):
             choice = update_answer['overrideCheck']
             
             if  choice == "Yes":
-                overrideSql = "UPDATE appliance_logs SET total_emissions = %s, date = %s, oven = %s, lighting = %s, fridge = %s, heating = %s, phones = %s, pc = %s, tv = %s, games_console = %s, washer = %s, dryer = %s, kettle = %s, other = %s, user = %s WHERE user = %s AND date = %s"    
-                overrideVals = (final_emissions, date_of_emission, total_oven, total_bulb, total_fridge, total_heating, total_phones, total_pc, total_tv, total_console, total_washer, total_dryer, total_kettle, total_other, username, username, date_of_emission)
+                overrideSql = "UPDATE appliance_logs SET total_emissions = %s, date = %s, oven = %s, lighting = %s, fridge = %s, heating = %s, phones = %s, pc = %s, tv = %s, games_console = %s, washer = %s, dryer = %s, dishwasher = %s, kettle = %s, other = %s, user = %s WHERE user = %s AND date = %s"    
+                overrideVals = (final_emissions, date_of_emission, total_oven, total_bulb, total_fridge, total_heating, total_phones, total_pc, total_tv, total_console, total_washer, total_dryer, total_dishwasher, total_kettle, total_other, username, username, date_of_emission)
                 cursor.execute(overrideSql, overrideVals)
                 dbConnection.db.commit()
                 print(cursor.rowcount, "record updated")
@@ -289,9 +305,11 @@ def createEmissionCalculation(username):
                 exit()
 
         else:
-            sql = "INSERT INTO appliance_logs (total_emissions, date, oven, lighting, fridge, heating, phones, pc, tv, games_console, washer, dryer, kettle, other, user) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (final_emissions, date_of_emission, total_oven, total_bulb, total_fridge, total_heating, total_phones, total_pc, total_tv, total_console, total_washer, total_dryer, total_kettle, total_other, username)
-            cursor.execute(sql, val)
+            sql = "INSERT INTO appliance_logs (total_emissions, date, oven, lighting, fridge, heating, phones, pc, tv, games_console, washer, dryer, dishwasher, kettle, other, user) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            val = (final_emissions, date_of_emission, total_oven, total_bulb, total_fridge, total_heating, total_phones, total_pc, total_tv, total_console, total_washer, total_dryer, total_dishwasher, total_kettle, total_other, username)
+            for item in val:
+                print(type(item))
+            cursor.execute(sql, val,)
             dbConnection.db.commit()
             print(cursor.rowcount, "record inserted")
     else:
@@ -322,28 +340,30 @@ def retrieveAverage(username):
         cursor.execute(sql, val,)
         result = cursor.fetchone()
         if result:
-            sql2 = "SELECT oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, games_console_hours, kettle_uses, other_hours, total_daily_emission FROM daily_averages WHERE user = %s"
+            sql2 = "SELECT oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emission FROM daily_averages WHERE user = %s"
             val2 = (username,)
             cursor.execute(sql2, val2)
             result = cursor.fetchall()
             row = result[0]
             oven = row[0]
-            bulb_type = row[1]
-            rooms = row[2]
-            hours_lit = row[3]
-            fridge_size = row[4]
-            heating_hours = row[5]
-            number_phones = row[6]
-            pc_hours = row[7]
-            tv_hours = row[8]
-            washer_hours = row[9]
-            dryer_hours = row[10]
-            games_console_hours = row[11]
-            kettle_uses = row[12]
-            other_hours = row[13]
-            total_daily_emissions = row[14]
+            oven_type = row[1]
+            bulb_type = row[2]
+            rooms = row[3]
+            hours_lit = row[4]
+            fridge_size = row[5]
+            heating_hours = row[6]
+            number_phones = row[7]
+            pc_hours = row[8]
+            tv_hours = row[9]
+            washer_hours = row[10]
+            dryer_hours = row[11]
+            dishwasher_hours = row[12]
+            games_console_hours = row[13]
+            kettle_uses = row[14]
+            other_hours = row[15]
+            total_daily_emissions = row[16]
             
-            upload_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, games_console_hours, kettle_uses, other_hours, total_daily_emissions)
+            upload_average(oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emissions)
         
     else:
         createEmissionCalculation(username)
@@ -365,5 +385,5 @@ def retrieveAverage(username):
         exit
         
         
-username = "Admin"
+username = "NobbyPickles"
 retrieveAverage(username)

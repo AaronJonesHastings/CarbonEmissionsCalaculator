@@ -4,6 +4,7 @@ import inquirer
 
 global username
 global oven
+global oven_type
 global bulb_type
 global rooms
 global hours_lit
@@ -19,21 +20,25 @@ global kettle_uses
 global other_hours
 global user_average
 
-def calculate_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, games_console_hours, washer_hours, dryer_hours, kettle_uses, other_hours, user):
+def calculate_average(oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, games_console_hours, washer_hours, dryer_hours, dishwasher_hours, kettle_uses, other_hours, user):
     
     """Take input from "tage_averges" function,uses it to query the applicance dictionary, and converts any
     numerical data to a float for manipulation. This is then added to the daily_averages table """
     
     from Dictionaries import appliances #import dictionaries.py for value referencing
+    import inquirer
     
-    oven_emission = appliances["oven"]['emission_value'] #retrieve emission value from nested dictionary
     """ Oven Calculation"""
+    
+    oven_emission = f"{appliances[oven_type]['emission_value']}" #retrieve emission value from nested dictionary using oven_type variable
     float(oven_emission)
     oven = float(oven)
+    oven_emission = float(oven_emission)
     total_oven_emissions = oven*oven_emission #multiply oven (hours) with oven_emission (kwh)
     print(f"Oven emissions = {total_oven_emissions}")
     
     """Bulb Calculaion"""
+    
     bulb_emission = f"{appliances[bulb_type]['emission_value']}"
     bulb_emission = float(bulb_emission)
     rooms = float(rooms) #convert to float
@@ -102,6 +107,13 @@ def calculate_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_ho
     kettle = kettle_emission*kettle_uses
     print(f"Kettle emissions = {kettle}")
     
+    """Dishwasher Calculation"""
+    dishwasher_emission = f"{appliances["dishwasher"]['emission_value']}"
+    dishwasher_hours = float(dishwasher_hours)
+    dishwasher_emission = float(dishwasher_emission)
+    dishwasher = dishwasher_hours*dishwasher_emission
+    print(f"Dishwasher emissions = {dishwasher}")
+    
     """Others Calculation"""
     other_emissions = f"{appliances["other_uses"]['emissions_value']}"
     other_hours = float(other_hours)
@@ -111,7 +123,7 @@ def calculate_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_ho
 
 
 
-    total_emissions_calc = total_oven_emissions + fridge_emission + total_bulb_emission + heating_emission + phones + pc + tv + console + washer + dryer + kettle + other
+    total_emissions_calc = total_oven_emissions + fridge_emission + total_bulb_emission + heating_emission + phones + pc + tv + console + washer + dryer + dishwasher + kettle + other
     total_emissions_calc = float(total_emissions_calc)
     print(f"The total emissions value is {total_emissions_calc}")
     
@@ -132,16 +144,16 @@ def calculate_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_ho
         if result:
             override_check = input("You already have a registered daily average, would you like to override this? Please enter Yes or No: ")
             if override_check == "Yes" or override_check == "yes":
-                sql = "UPDATE daily_averages SET user = %s, oven = %s, bulb_type = %s, rooms = %s, hours_lit = %s, fridge_size = %s, heating_hours = %s, number_phones = %s, pc_hours = %s, tv_hours = %s, washer_hours = %s, dryer_hours = %s, games_console_hours = %s, kettle_uses = %s, other_hours = %s, total_daily_emission = %s WHERE user = %s"
-                values = (user, oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, games_console_hours, kettle_uses, other_hours, total_emissions_calc, user)
+                sql = "UPDATE daily_averages SET user = %s, oven = %s, bulb_type = %s, rooms = %s, hours_lit = %s, fridge_size = %s, heating_hours = %s, number_phones = %s, pc_hours = %s, tv_hours = %s, washer_hours = %s, dryer_hours = %s, dishwasher_hours = %s, games_console_hours = %s, kettle_uses = %s, other_hours = %s, total_daily_emission = %s WHERE user = %s"
+                values = (user, oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_emissions_calc, user)
                 cursor.execute(sql, values)
                 dbConnection.db.commit()
                 print(cursor.rowcount, "record updated")
             else:
                 print("You changes have been discarded")
         else:
-            sql = "INSERT INTO daily_averages (user, oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, games_console_hours, kettle_uses, other_hours, total_daily_emission) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            values = (user, oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, games_console_hours, kettle_uses, other_hours, total_emissions_calc)
+            sql = "INSERT INTO daily_averages (user, oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emission) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            values = (user, oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_emissions_calc)
             cursor.execute(sql, values)
             dbConnection.db.commit()
             print(cursor.rowcount, "record inserted")
@@ -151,13 +163,29 @@ def calculate_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_ho
 def take_averages(username):
     print("You will be asked a series of questions. We ask that you provide an honest, average account of your daily activity. These values will be used to calculate your average daily emissions value going forwards, unless you choose to change it")
     user = username
-    oven = input("How many hours a day do you use your oven or stove? ")
+    
+    #establish oven details
+    oven_question = [
+        inquirer.List('Oven Type',
+                      message = "Do you use a gas or electric oven?",
+                      choices = ["Gas", "Electric"],
+        ),
+    ]
+    
+    oven_answer = inquirer.prompt(oven_question)
+    choice = oven_answer['Oven Type']
+    if choice == "Gas":
+        oven_type = "gas_oven"
+    else:
+        oven_type = "electric_oven"
+    
+    oven = input("How many hours a day do you use your oven?")
     
     #create picklist for bulb type
     bulb_question = [
         inquirer.List('bulb type',
                       message = "Please select your type of bulb",
-                      choices = ["Energy Saving Bulbs", "LED Bulb"],
+                      choices = ["Energy Saving Bulbs", "Standard Bulb"],
         ),
     ]
     
@@ -165,7 +193,7 @@ def take_averages(username):
     if bulb_answer == "Energy Saving Bulbs":
         bulb_type = "energy_saving_bulb"
     else:
-        bulb_type = "LED_Bulb"
+        bulb_type = "standard_bulb"
     
     rooms = input("How many rooms do you light in your house? ")
     hours_lit = input("On average, for how many hours do you keep each room lit for? ")
@@ -194,15 +222,16 @@ def take_averages(username):
     games_console_hours = input("How many hours a day is a games console used in your house? ")
     washer_hours = input("How many hours a day is a washing machine used in your house? ")
     dryer_hours = input("How many hours a day is a dryer used in your house? ")
+    dishwasher_hours = input("How many hours a day is a dishwasher used in your house? ")
     kettle_uses = input("How many times a day is a kettle boiled in your house? ")
     other_hours = input("How many hours a day, cumulatively, are other appliances used in your house? ")
     
     
     #call calculation function
-    calculate_average(oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, games_console_hours, washer_hours, dryer_hours, kettle_uses, other_hours, user)
+    calculate_average(oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, games_console_hours, washer_hours, dishwasher_hours, dryer_hours, kettle_uses, other_hours, user)
     
     
 #print("You will be asked a series of questions. We ask that you provide an honest, average account of your daily activity")
 
-username = "FBaggins"
+username = "BigWizard"
 take_averages(username)

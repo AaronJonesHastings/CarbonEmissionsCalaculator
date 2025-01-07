@@ -14,6 +14,7 @@ class user:
    
    change_password - for use when a user intentionally wants to change a password
    forgot_password - for use when a user does not know their password
+   lockout - set lockout value to 1 (true) in SQL tabel if login attempts exceeded
    """
     def __init__(self, username, forename, surname, dob, password, email):
         #initiate user concepts - concepts match columns in the user_details SQL table

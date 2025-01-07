@@ -55,23 +55,25 @@ motorbike_emission_dict = {
                     {'emission_value':0.18294}                     
                     }
 
-#Unlike the above, the below are averages per usage for household appliances
+#Unlike the above, the below are averages per usage/hour for household appliances
 appliances = {
-                #contains arbitrary values for testing until accurate data can be sourced
-              "oven":{'emission_value':0.001122},#test value
-              "energy_saving_bulb":{'emission_value':0.000011},#test value
-              "LED_Bulb":{'emission_value':0.0011},#test value
+              #referenced from https://www.carbonfootprint.com/energyconsumption.html
+              "gas_oven":{'emission_value':0.28127313101}, #add to query - per use - per use
+              "electric_oven":{'emission_value':0.67357512953}, #add to query
+              "energy_saving_bulb":{'emission_value':0.00753424657},
+              "standard_bulb":{'emission_value':0.04315068493}, #update name in query
               "room":{'emission_value':0.003},#test value
-              "small_fridge":{'emission_value':0.0006},#test value - 24 hours value
-              "medium_fridge":{'emission_value':0.0007},#test value - 24 hours value
-              "large_fridge":{'emission_value':0.0008},#test value - 24 hours value
+              "small_fridge":{'emission_value':0.24383561643},#24 hours value - A++ fridge
+              "medium_fridge":{'emission_value':0.31780821917},#24 hours value - A+ fridge
+              "large_fridge":{'emission_value':0.47945205479},#24 hours value - A fridge
               "phone":{'emission_value':0.00005},#test value
               "pc_hour":{'emissions_value':0.0008},#test value
-              "tv_hour":{'emissions_value':0.0008},#test value
+              "tv_hour":{'emissions_value':0.1133825079},#based on average use of LCD tv
               "games_console_hour":{'emissions_value':0.0005},#test value
-              "washer_hour":{'emission_value':0.001},#test value
-              "dryer_hour":{'emissions_value':0.001},#test value
-              "kettle_use":{'emissions_value':0.000052},#test value
-              "other_uses":{'emissions_value':0.00015285}#test value
+              "washer_hour":{'emission_value':0.27272727272},
+              "dishwasher":{'emission_value':0.62222222222}, #per use
+              "dryer_hour":{'emissions_value':1.07432432432},#per use
+              "kettle_use":{'emissions_value':0.04734111543},#per use
+              "other_uses":{'emissions_value':0.4}#arbitray value based on average of items above 
               }
               
