@@ -12,6 +12,7 @@ def register_motorbike(username):
 
     if result:
        bike_reg = input("Please provide your motorbike's registration number: ")
+       bike_reg = bike_reg.upper() #format correctly
        bike_make = input("Please provide your make of motorbike: ")
        bike_model = input("Please provide the model of your motorbike: ")
 
@@ -46,6 +47,7 @@ def registercar(username):
 
     if result:
         car_reg = input("Please provide your car registration number: ")
+        car_reg = car_reg.upper()
         car_make = input("Please provide your make of car: ")
         car_model = input("Please provide the model of your car: ")
         #establish input questions for vehicle and petrol types

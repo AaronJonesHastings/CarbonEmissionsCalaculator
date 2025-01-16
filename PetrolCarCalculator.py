@@ -81,7 +81,19 @@ def strip_and_replace(variable):
 #create the function that checks for if a user has a car registered against their username
 
 def car_check(username):
-    car_reg = input("Please enter your car's registration number: ")
+    #take car reg
+    while True:
+        car_reg = input("Please enter your car's registration number: ")
+        if len(car_reg) < 7:
+            print("Car registration too short, please enter again")
+        elif len(car_reg) > 8:
+            print("Car registration is too long, please enter again")
+        else:
+            break
+    #make sure car reg is formatted correctly for SQL query
+    car_reg = car_reg.upper()
+    print(car_reg) #for testing purposes
+        
     cursor = dbConnection.db.cursor()
     sql1 = "SELECT registration_number FROM vehicle_details WHERE registration_number = %s" #SQL query to pass
     sql2 = "SELECT owner FROM vehicle_details WHERE registration_number = %s" #SQL query to get owner
