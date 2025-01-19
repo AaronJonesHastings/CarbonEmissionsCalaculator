@@ -38,15 +38,16 @@ def carEmissionsCalculation(username, car_reg, car, carType): #CREATE CHECKS FOR
             minutes = float(minutes) #convert user input to float for later manipulation
             
             global petrolCarEmissionsValue 
-            emissionsPerMinute = carEmission / 60
-            emissions = emissionsPerMinute * minutes
-            print(f"Carbon emission output for your drive of {car_reg} is {emissions}kgCO2e")
+            emissionsPerMinute = carEmission / 60 #divide by 60 to get the emission/minute value
+            emissions = emissionsPerMinute * minutes #multiply by number of minutes driven
+            print(f"Carbon emission output for your drive of {car_reg} is {emissions}kgCO2e") #feedback to use the emissions for that drive
             petrolCarEmissionsValue = emissions
-            print(petrolCarEmissionsValue)
+            #print(petrolCarEmissionsValue)
+            #now get the date of the emission
             date_question = [
             inquirer.List('Date of Emission',
                           message = "Was ths emission from today?",
-                          choices = [ "Yes","No"],
+                          choices = [ "Yes","No"], #establish picklist
                 ),
             ]
     
@@ -55,19 +56,19 @@ def carEmissionsCalculation(username, car_reg, car, carType): #CREATE CHECKS FOR
             choice = date_answer['Date of Emission']
      
             if choice == "Yes":
-                date_of_emission = date.today()
-            else:
+                date_of_emission = date.today() #use today's date
+            else: #if drive not from today
                 date_of_emission = input("Please input the date of these emissions: ")
-                date_of_emission = datetime.datetime.strptime(date_of_emission, "%d/%m/%Y")
+                date_of_emission = datetime.datetime.strptime(date_of_emission, "%d/%m/%Y") #format the date based on user input
             """
             Now establish details to be passed to mysql, including: username, cartype,
             reg number, emissions
             """
             mycursor = dbConnection.db.cursor()
-            sql = "INSERT INTO car_emissions (user, date, vehicle, value) VALUES (%s, %s, %s, %s)"
+            sql = "INSERT INTO car_emissions (user, date, vehicle, value) VALUES (%s, %s, %s, %s)" #pass values securely to mysql
             val = (username, date_of_emission, car_reg, petrolCarEmissionsValue)
             mycursor.execute(sql, val)
-            dbConnection.db.commit()
+            dbConnection.db.commit() #commit the SQL insertion
             print(mycursor.rowcount, "record inserted")
         else:
             print("Error encountered")
