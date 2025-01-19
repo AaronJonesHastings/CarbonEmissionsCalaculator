@@ -81,15 +81,19 @@ def strip_and_replace(variable):
 #create the function that checks for if a user has a car registered against their username
 
 def car_check(username):
-    #take car reg
+    #take car reg and check it is the right formatting
     while True:
         car_reg = input("Please enter your car's registration number: ")
-        if len(car_reg) < 7:
+        if len(car_reg) < 7: #if reg too short
             print("Car registration too short, please enter again")
-        elif len(car_reg) > 8:
-            print("Car registration is too long, please enter again")
-        else:
             break
+        elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
+            reg_list = []
+            reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list
+            car_reg = reg_list[0]+reg_list[1] #combine both elements
+            car_reg = car_reg.upper() #make upper case
+        else:
+            car_reg = car_reg.upper() #make upper case
     #make sure car reg is formatted correctly for SQL query
     car_reg = car_reg.upper()
     print(car_reg) #for testing purposes
