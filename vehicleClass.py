@@ -5,6 +5,7 @@ class Vehicle:
     on the type of vehicle
     """
     
+       
     def __init__ (self, registration_number, make, model, vehicleType, petrol_type, owner):
         #correspond to entries in the vehcile_details sql table
         self.registration_number = registration_number

@@ -23,6 +23,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="APIClass.py" />
     <Compile Include="ApplianceCalculator.py" />
     <Compile Include="vehicleClass.py" />
     <Compile Include="userClass.py" />
