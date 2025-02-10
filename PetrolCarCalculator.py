@@ -4,7 +4,7 @@ from Dictionaries import petrol_emission_dict #import car type dictionary
 #from Dictionaries import users_cars #import nested dictionary containing cars registered to users
 import dbConnection
 from datetime import date
-import vehicleClass #not yet in use, will be used of OOP purposes later
+#import vehicleClass #not yet in use, will be used of OOP purposes later
 
 
 #establish global variables for future use
@@ -73,28 +73,21 @@ def carEmissionsCalculation(username, car_reg, car, carType): #CREATE CHECKS FOR
         else:
             print("Error encountered")
 
-#define variable used to remove excess characters from a returned SQL query
-
-def strip_and_replace(variable):
-    variable = str(variable).strip('(),')
-    variable = variable.replace("'", "")            
-            
 #create the function that checks for if a user has a car registered against their username
 
 def car_check(username):
     #take car reg and check it is the right formatting
-    while True:
-        car_reg = input("Please enter your car's registration number: ")
-        if len(car_reg) < 7: #if reg too short
-            print("Car registration too short, please enter again")
-            break
-        elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
-            reg_list = []
-            reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list
-            car_reg = reg_list[0]+reg_list[1] #combine both elements
-            car_reg = car_reg.upper() #make upper case
-        else:
-            car_reg = car_reg.upper() #make upper case
+    car_reg = input("Please enter your car's registration number: ")
+    if len(car_reg) < 7: #if reg too short
+        print("Car registration too short, please enter again")
+        exit
+    elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
+        reg_list = []
+        reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list
+        car_reg = reg_list[0]+reg_list[1] #combine both elements
+        car_reg = car_reg.upper() #make upper case
+    else:
+        car_reg = car_reg.upper() #make upper case
     #make sure car reg is formatted correctly for SQL query
     car_reg = car_reg.upper()
     print(car_reg) #for testing purposes
@@ -133,9 +126,5 @@ def car_check(username):
         from registercar import vehicleCheck
         vehicleCheck(username)
         
-def strip_and_replace(variable):
-    variable = str(variable).strip('(),')
-    variable = variable.replace("'", "")
-
 username = input("Please provide your username: ")
 car_check(username)

@@ -25,32 +25,29 @@ class API:
     """    
     
     # Function to calculate distance between two postcodes
-    def calculate_distance(coords1, coords2, username, car_reg, travel_mode="driving-car"):
+    def calculate_distance(postcode1, postcode2, coords, car_reg, username, travel_mode="driving-car"):
         import openrouteservice
-        key =  '5b3ce3597851110001cf6248aae0ceee7de14c67b09ed1f9fe6405a5'
-        client = openrouteservice.Client(key=key)
-
-               
-        # Make a request to the OpenRouteService API
+        from openrouteservice.directions import directions
+        ORS_API_KEY = '5b3ce3597851110001cf6248aae0ceee7de14c67b09ed1f9fe6405a5'
+        #print(coords)
         try:
-            route = client.directions(
-                coordinates=[coords1, coords2],
-                profile=travel_mode,
-                format="json"
-            )
+            # Initialize OpenRouteService client
+            client = openrouteservice.Client(key=ORS_API_KEY)
+            routes = directions(client, coords)
             # Extract distance from the response (in meters)
-            distance = route["routes"][0]["summary"]["distance"]
-            duration = route["routes"][0]["summary"]["duration"]
-            
+            distance = routes["routes"][0]["summary"]["distance"]
+            duration = routes["routes"][0]["summary"]["duration"]
             print(distance)
-            print(duration)
+            #print(routes)
             return {
                 "distance_km": distance / 1000,  # Convert to kilometers
                 "duration_minutes": duration / 60  # Convert to minutes
+                
             }
         except openrouteservice.exceptions.ApiError as e:
             print(f"API Error: {e}")
             return None
+        
 
 
     def gather_info_call_API(username):
@@ -94,25 +91,22 @@ class API:
             start_location = geolocator.geocode(starting_postcode)
             end_location = geolocator.geocode(ending_postcode)
             if start_location:
-                #return (location.latitude, location.longitude)
-                #print(f'{start_location.latitude}, {start_location.longitude}')
-                start_coords = [start_location.latitude, start_location.longitude]
+                #return (location.longitude, location.latitude)
+                #print(f'{start_location.longitude}, {start_location.latitude}')
+                start_coords = [start_location.longitude, start_location.latitude]
+                print(start_coords)
             else:
                 raise ValueError(f"Could not find location for postcode: {starting_postcode}")
                 exit
             if end_location:
-                #print(f'{end_location.latitude}, {end_location.longitude}')
-                end_coords = [end_location.latitude, end_location.longitude]
+                #print(f'{end_location.longitude}, {end_location.latitude}')
+                end_coords = [end_location.longitude, end_location.latitude]
+                print(end_coords)
             else:
                 raise ValueError(f"Could not find location for postcode: {ending_postcode}")
             
-            #print(start_coords, end_coords)
-            #print(type(start_coords))
-            start_coords = tuple(start_coords)
-            #print(type(start_coords))
-            #print(start_coords)
-            end_coords = tuple(end_coords)
-            API.calculate_distance(start_coords, end_coords, username, car_reg)
+            coords = (start_coords, end_coords)
+            API.calculate_distance(starting_postcode, ending_postcode, coords, username, car_reg)
         
         else:
             exit

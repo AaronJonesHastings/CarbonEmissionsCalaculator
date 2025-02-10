@@ -12,6 +12,16 @@ def register_motorbike(username):
 
     if result:
        bike_reg = input("Please provide your motorbike's registration number: ")
+       if len(bike_reg) < 7: #if reg too short
+            print("Bike registration too short, please enter again")
+            exit
+       elif len(bike_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
+            reg_list = []
+            reg_list = bike_reg.split() #split reg in the middle (using the space) and store both parts in a list
+            bike_reg = reg_list[0]+reg_list[1] #combine both elements
+            bike_reg = bike_reg.upper() #make upper case
+       else:
+            bike_reg = bike_reg.upper() #make upper case      
        bike_reg = bike_reg.upper() #format correctly
        bike_make = input("Please provide your make of motorbike: ")
        bike_model = input("Please provide the model of your motorbike: ")
@@ -48,6 +58,16 @@ def registercar(username):
     if result:
         car_reg = input("Please provide your car registration number: ")
         car_reg = car_reg.upper()
+        if len(car_reg) < 7: #if reg too short
+            print("Car registration too short, please enter again")
+            exit
+        elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
+            reg_list = []
+            reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list
+            car_reg = reg_list[0]+reg_list[1] #combine both elements
+            car_reg = car_reg.upper() #make upper case
+        else:
+            car_reg = car_reg.upper() #make upper case
         car_make = input("Please provide your make of car: ")
         car_model = input("Please provide the model of your car: ")
         #establish input questions for vehicle and petrol types
