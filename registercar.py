@@ -37,10 +37,16 @@ def register_motorbike(username):
        bike_answer = inquirer.prompt(bike_question)
        petrol_type = "Diesel"
        bike_type = (bike_answer['Bike Type'])
+       mpg = input("Please provide the mpg value for your car.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car")
+       try:
+            float(mpg)
+       except ValueError:
+            print("MPG value must be numeric.\nPlease try again")
+            exit
        owner = username
        mycursor = dbConnection.db.cursor()
-       sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, owner) VALUES (%s, %s, %s, %s, %s, %s)"
-       val = (bike_reg, bike_make, bike_model, bike_type, petrol_type, owner)
+       sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, mpg, owner) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+       val = (bike_reg, bike_make, bike_model, bike_type, petrol_type, mpg, owner)
        mycursor.execute(sql, val)
        dbConnection.db.commit()
        print(mycursor.rowcount, "record inserted")
@@ -95,9 +101,16 @@ def registercar(username):
         #print(car_model)
         #print(car_type)
         #print(petrol_type)
+        #establish mpg value - taken from fuelly website for test purposes - https://www.fuelly.com/car    
+        mpg = input("Please provide the mpg value for your car.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car")
+        try:
+            float(mpg)
+        except ValueError:
+            print("MPG value must be numeric.\nPlease try again")
+            exit
         mycursor = dbConnection.db.cursor()
-        sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, owner) VALUES (%s, %s, %s, %s, %s, %s)"
-        val = (car_reg, car_make, car_model, car_type, petrol_type, owner)
+        sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, mpg, owner) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        val = (car_reg, car_make, car_model, car_type, petrol_type, mpg, owner)
         mycursor.execute(sql, val)
         dbConnection.db.commit()
         print(mycursor.rowcount, "record inserted")
@@ -121,5 +134,5 @@ def vehicleCheck(username):
         print("Username does not exist") #failed SQL query
         
 
-username = "igglepiggle"
+username = "Admin"
 vehicleCheck(username)

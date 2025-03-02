@@ -1,30 +1,8 @@
-from turtle import exitonclick
-
-
 class API:
     def __init__ (self, key):
         self.key = key
     
-    """   
-    def call_api(starting_postcode, ending_postcode, car_reg, username): #used to create lat/long co-ordinates for API call
-        from geopy.geocoders import Nominatim
-        geolocator = Nominatim(user_agent="postcode_to_coordinates")
-        start_location = geolocator.geocode(starting_postcode)
-        end_location = geolocator.geocode(ending_postcode)
-        if start_location:
-            #return (location.latitude, location.longitude)
-            print(f'{start_location.latitude}, {start_location.longitude}')
-        else:
-            raise ValueError(f"Could not find location for postcode: {starting_postcode}")
-            exit
-        if end_location:
-            print(f'{end_location.latitude}, {end_location.longitude}')
-        else:
-            raise ValueError(f"Could not find location for postcode: {ending_postcode}")
-        exit
-    """    
-    
-    # Function to calculate distance between two postcodes
+    # Function to calculate distance between two postcodes, then calculate the emissions for that drive
     def calculate_distance(postcode1, postcode2, coords, car_reg, username, travel_mode="driving-car"):
         import openrouteservice
         from openrouteservice.directions import directions
@@ -36,19 +14,99 @@ class API:
             routes = directions(client, coords)
             # Extract distance from the response (in meters)
             distance = routes["routes"][0]["summary"]["distance"]
-            duration = routes["routes"][0]["summary"]["duration"]
-            print(distance)
+            #duration = routes["routes"][0]["summary"]["duration"] #duration not needed but is returned by the API
+            #print(f"The estimated distance in metres is {distance}") #distance in metres
             #print(routes)
-            return {
-                "distance_km": distance / 1000,  # Convert to kilometers
-                "duration_minutes": duration / 60  # Convert to minutes
-                
-            }
         except openrouteservice.exceptions.ApiError as e:
             print(f"API Error: {e}")
             return None
-        
+        #convert metres into miles - 1 metre = 0.000621371 miles
+        miles = 0.000621371
+        if distance > 0:
+            distance_miles = distance*miles
+            print(f"The estimated distance in miles is {distance_miles}")
+            """
+            now calculate emissions based on the distance and emission value for the chosed vehicle
+            """
+            #retrieve vehicle details from SQL table so nested dictionary can be queried
+            import dbConnection
+            cursor = dbConnection.db.cursor()
+            sql1 = "SELECT registration_number FROM vehicle_details WHERE registration_number = %s" #SQL query to check car exists
+            sql2 = "SELECT owner FROM vehicle_details WHERE registration_number = %s" #SQL query to get owner
+            cursor.execute(sql1, (car_reg,))
+            car_exists = cursor.fetchone()
+            #print(car_reg) #for testing
+            #print(car_exists) #for testing
+            if car_reg in car_exists:
+                cursor.execute(sql2, (car_reg,))
+                owner_check = cursor.fetchone()
+                if type(car_exists) != type(None):
+                    if username in owner_check:
+                        sql3 = "SELECT mpg, type FROM vehicle_details WHERE registration_number = %s"
+                        cursor.execute(sql3, (car_reg,))
+                        searchResults = cursor.fetchall()
+                        #print(searchResults)
+                        mpg, carType = searchResults[0]
+                        #print(mpg)
+                        #print(carType)
+                        """
+                        Now select the relevant dictionary based on car vehicle type. Motorbikes are covered by the phrase
+                        carType for simplicity in coding
+                        """
+                        if "Petrol" in carType:
+                            print("Petrol dict used")
+                            from Dictionaries import petrol_emission_dict
+                            carEmission = f"{petrol_emission_dict[carType]['emission_value']}" #retrieve emission value from nested dictionary
+                            carEmission = float(carEmission) #store dictionary value as a float
+                        elif "Diesel" in carType:
+                            print("Diesel dict used")
+                            from Dictionaries import diesel_emission_dict
+                            carEmission = f"{diesel_emission_dict[carType]['emission_value']}"
+                            carEmission = float(carEmission)
+                        else:
+                            print("Mototbike dict used")
+                            from Dictionaries import motorbike_emission_dict
+                            carEmission = f"{motorbike_emission_dict[carType]['emission_value']}"
+                            carEmission = float(carEmission)
+                        
+                        """ Calculate Emission """
+                        #Emission algorithm = (distance/mpg) * emission factor
+                        fuelUsed = distance_miles / mpg
+                        drive_emission = fuelUsed * carEmission
+                        print(f"Total emissions for this drive are {drive_emission}")
+                        import inquirer
+                        query_save = [
+                            inquirer.List('Save Drive',
+                                          message = "Would you like to save this drive?",
+                                          choices = ["Yes", "No"],
+                                      ),
+                            ]
+                        
+                        query_answer = inquirer.prompt(query_save)
+                        choice = query_answer['Save Drive']
+                        if choice == "Yes":
+                            drive_name = input("Please provide a name for this drive: ")
+                            sql4 = "INSERT INTO drive_averages (user, vehicle_reg, starting_postcode, ending_postcode, distance, drive_emission, drive_name) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                            val = (username, car_reg, postcode1, postcode2, distance, drive_emission, drive_name)
+                            cursor.execute(sql4, val)
+                            dbConnection.db.commit()
+                            print(cursor.rowcount, "record inserted")
+                        else:
+                             exit
+                    else:
+                        print("You are not the owner of this vehicle, please try again with a car egistered to this account")
+                else:
+                    print("Error encountered, please try again")
+            else:
+                print("Car not found, please try again")
+        else:
+            print("Invalid distance for this journey, please try again with new postcodes")
 
+        #carEmission = f"{petrol_emission_dict[carType]['emission_value']}" #retrieve emission value from nested dictionary
+        #carEmission = float(carEmission) #store dictionary value as a float
+        
+    #def store_drive_average(postcode1, postode2, distane_miles, username, car_reg, emission_value):
+        
 
     def gather_info_call_API(username):
         import dbConnection #import for cursors
@@ -106,7 +164,7 @@ class API:
                 raise ValueError(f"Could not find location for postcode: {ending_postcode}")
             
             coords = (start_coords, end_coords)
-            API.calculate_distance(starting_postcode, ending_postcode, coords, username, car_reg)
+            API.calculate_distance(starting_postcode, ending_postcode, coords, car_reg, username)
         
         else:
             exit

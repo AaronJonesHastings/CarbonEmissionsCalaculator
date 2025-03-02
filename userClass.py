@@ -193,7 +193,7 @@ class user:
         applianceResult = mycursor.fetchall() #store SQL returns
         #print("Total number of appliance emission records = ", mycursor.rowcount)
 
-        #iterate through the result and add to the emissioResults list
+        #iterate through the result and add to the emissionResults list
         n = 0
         for i in applianceResult:
             applianceEmissions.append(applianceResult[n])
