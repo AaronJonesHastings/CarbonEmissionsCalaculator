@@ -70,6 +70,8 @@ def carEmissionsCalculation(username, car_reg, car, carType): #CREATE CHECKS FOR
             mycursor.execute(sql, val)
             dbConnection.db.commit() #commit the SQL insertion
             print(mycursor.rowcount, "record inserted")
+            from user_direct_class import direction_picklist
+            direction_picklist.page_direction(username)
         else:
             print("Error encountered")
 
@@ -127,4 +129,4 @@ def car_check(username):
         vehicleCheck(username)
         
 username = input("Please provide your username: ")
-car_check(username)
+#car_check(username)

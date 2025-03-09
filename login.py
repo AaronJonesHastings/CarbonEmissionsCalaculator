@@ -1,14 +1,22 @@
 import dbConnection #imports the database details
-import bcrypt #library used for decryption
+import bcrypt
+global login_attempts
+from user_direct_class import direction_picklist #library used for decryption
 
 #get user details at login
 
-username = input("Please enter your username:\n")
+username = input("Please enter your username: ")
+
 login_attempts = 0 #locks account when login_attempts = 3
+
+def generate_session_id():
+    import uuid
+    return str(uuid.uuid4())
 
 #define the variable to verify the password
 def verify_password(username, login_attempts):
-    password = input("Please enter your password:\n")
+    login_attempts = 0
+    password = input("Please enter your password: ")
     cursor = dbConnection.db.cursor()
     exists_check = "SELECT username FROM user_details WHERE username = %s"
     val = (username,)
@@ -35,11 +43,13 @@ def verify_password(username, login_attempts):
                     #now verify the password against the stored hash
                     if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
                         print("Password Accepted")
+                        from user_direct_class import direction_picklist
+                        direction_picklist.page_direction(username)
                         return True #decrypt successful
                     else:
                         print("Password Not Accepted")
                         login_attempts = login_attempts + 1
-                        #print(f"New login attempts value = {login_attempts}")
+                        print(f"New login attempts value = {login_attempts}")
                         return verify_password(username, login_attempts) #decrpyt failed
                 else:
                     print("User Not Found")

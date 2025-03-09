@@ -317,7 +317,7 @@ class user:
         
         #call graphing function
         user.totalGraphing(username, emissionValues, emissionDates)
-
         
+  
 #user.forgot_password()
 user.sortAllData("Admin")   

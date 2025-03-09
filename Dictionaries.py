@@ -1,4 +1,7 @@
-petrol_emission_dict = {
+"""The below is taken from the UK government and provides an emission 
+value in g of CO2. These are not emission factors """
+
+petrol_emission_dict = { 
                      "Small Car - Petrol":
                          {'emission_value':0.2266},
                      "Medium Car - Petrol":

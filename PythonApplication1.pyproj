@@ -25,6 +25,7 @@
   <ItemGroup>
     <Compile Include="APIClass.py" />
     <Compile Include="ApplianceCalculator.py" />
+    <Compile Include="update_variable.py" />
     <Compile Include="vehicleClass.py" />
     <Compile Include="userClass.py" />
     <Compile Include="CreateDailyAverage.py" />
@@ -34,7 +35,7 @@
     <Compile Include="Dictionaries.py" />
     <Compile Include="hgvCalculator.py" />
     <Compile Include="login.py" />
-    <Compile Include="main.py" />
+    <Compile Include="user_direct_class.py" />
     <Compile Include="MotorbikeCalculator.py" />
     <Compile Include="PetrolCarCalculator.py" />
     <Compile Include="registercar.py" />
