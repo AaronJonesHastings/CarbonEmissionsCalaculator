@@ -77,14 +77,7 @@ def verify_password(username, login_attempts):
                 else:
                     print("Error encountered, please attempt to login again, or contact support")
                     exit
-             #   from userClass import user
-              #  user.lockout(username)
-                #lockout = 1
-                #sql = "UPDATE user_details SET locked = %s WHERE username = %s"
-                #val = (lockout, username,)
-                #cursor.execute(sql, val)
-                #dbConnection.db.commit()
-                #print("Your account is locked, please contact support or use the forgotten password function")
+
         else:
             print("Your account is locked, please contact support or use the forgotten password function")
             import inquirer
@@ -125,4 +118,4 @@ def verify_password(username, login_attempts):
         else:
             exit
 
-verify_password(username, login_attempts)
+#verify_password(username, login_attempts)

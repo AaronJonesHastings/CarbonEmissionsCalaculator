@@ -55,9 +55,12 @@ def userSignUp():
             mycursor.execute(sql2, val2)
             dbConnection.db.commit()
             print(mycursor.rowcount, "record inserted")
-            print("Thank you for signing up to use your personal carbon emissions calculator!")
+            print("Thank you for signing up to use your personal carbon emissions calculator!\nYou may now sign in")
+            login_attempts = 0
+            from login import verify_password
+            verify_password(username, login_attempts)
         else:
             print ("Passwords do not match")
             userSignUp() #loop back to start
     
-userSignUp()
+#userSignUp()
