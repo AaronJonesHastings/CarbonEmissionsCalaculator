@@ -1,3 +1,19 @@
+"""
+A Note on Calculations.
+To calculate CO2 output, one must first know the fuel efficency of a vehicle, the
+emission factor of the vehicle, and the distance travelled.
+
+Fuel Used = Distance/Fuel Efficency
+CO2 = Fuel Used x Emission Factor
+
+To aid with this, an API callout is querying an open source maps website to 
+calculate the distance travelled.
+
+Emission Factor values are supplied by UK Gov in grams/mile
+Vehicle Fuel Efficency is supplied by the user (in miles per gallon)
+"""
+
+
 #Import relevant modules
 #import inquirer
 from Dictionaries import petrol_emission_dict #import car type dictionary
@@ -25,23 +41,43 @@ create the function that checks the emissions of a car
 This will be called by the check_car function
 """
 
-def carEmissionsCalculation(username, car_reg, car, carType): #CREATE CHECKS FOR SQL INJECTION SAFETY
+def carEmissionsCalculation(username, car_reg, car, carType, distance): #CREATE CHECKS FOR SQL INJECTION SAFETY
+        #distance worked out using API.API_callout_for_calculator, passed from car_check function    
         if car == 1:
             import inquirer
             import datetime
+            import dbConnection
             carEmission = f"{petrol_emission_dict[carType]['emission_value']}" #retrieve emission value from nested dictionary
             carEmission = float(carEmission) #store dictionary value as a float
+            
+            #workout fuel used - distance/mpg
+            #query SQL database for FE
+            feSQL = "SELECT mpg FROM vehicle_details WHERE registration_number = %s"
+            val = (username, )
+            mycursor.execute(feSQL, val)
+            mpg = mycursor.fetchone() #store SQL result in variable
+            mpg = float(mpg).strip('(),')
+            mpg = mpg.replace("'", "")
+            print(f"MPG Result = {mpg}")
+            
+            fuelUsed = distance/mpg
+            fuelUsed = float(fuelUsed)
+            print(f"Fuel Used = {fuelUsed}")
+            
+            #workout CO2 Emissions = Fuel Used x Emission Factor
+            
+            co2 = fuelUsed * carEmission
 
             #get user input for minutes driven
 
             minutes = input(f"How many minutes have you driven {car_reg} for this drive?\n") #CREATE CODE TO CONFIRM THIS IS A FLOAT. CREATE LENGTH CHECK
             minutes = float(minutes) #convert user input to float for later manipulation
-            
+
             global petrolCarEmissionsValue 
-            emissionsPerMinute = carEmission / 60 #divide by 60 to get the emission/minute value
-            emissions = emissionsPerMinute * minutes #multiply by number of minutes driven
-            print(f"Carbon emission output for your drive of {car_reg} is {emissions}kgCO2e") #feedback to use the emissions for that drive
-            petrolCarEmissionsValue = emissions
+            #emissionsPerMinute = carEmission / 60 #divide by 60 to get the emission/minute value
+            #emissions = emissionsPerMinute * minutes #multiply by number of minutes driven
+            #print(f"Carbon emission output for your drive of {car_reg} is {emissions}kgCO2e") #feedback to use the emissions for that drive
+            petrolCarEmissionsValue = co2
             #print(petrolCarEmissionsValue)
             #now get the date of the emission
             date_question = [
@@ -77,9 +113,9 @@ def carEmissionsCalculation(username, car_reg, car, carType): #CREATE CHECKS FOR
 
 #create the function that checks for if a user has a car registered against their username
 
-def car_check(username):
+def car_check(username, distance, car_reg):
     #take car reg and check it is the right formatting
-    car_reg = input("Please enter your car's registration number: ")
+    #car_reg = input("Please enter your car's registration number: ")
     if len(car_reg) < 7: #if reg too short
         print("Car registration too short, please enter again")
         exit
@@ -120,13 +156,13 @@ def car_check(username):
             #clean excess characters from the sql query
             carType = str(carType).strip('(),')
             carType = carType.replace("'", "")
-            carEmissionsCalculation(username, car_reg, car, carType)
+            carEmissionsCalculation(username, car_reg, car, carType, distance)
         else:
             print("You are not the owner of this vehicle")
     else:
         print("This car does not exist, please register the vehicle to log these emissions")
         from registercar import vehicleCheck
-        vehicleCheck(username)
+        vehicleCheck(username, car_reg)
         
 username = input("Please provide your username: ")
 #car_check(username)
