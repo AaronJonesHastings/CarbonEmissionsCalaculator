@@ -168,6 +168,24 @@ class user:
         mycursor.execute(sql, val)
         dbConnection.db.commit()
         print("Account locked due to too many inorrect password entries. Please contact support to unlock your account, or select forgot password")
+        import inquirer
+        lockout_question = [
+            inquirer.List ('Unlock Choices',
+                           message = 'Please select unlock acount, forgotten password or close application:',
+                           choices = ["Forgotten password", "Unlock account", "Close application"],
+                       ),
+            ]
+            
+        account_management_answer = inquirer.prompt(lockout_question)
+        account_choice = (account_management_answer['Unlock Choices'])
+        if account_choice == "Forgotten password":
+            from userClass import user
+            user.forgot_password()
+        elif account_choice == "Unlock account":
+            from userClass import user
+            user.unlockAccount(username)
+        elif account_choice == "Close application":
+            exit
         
     def graphAppliances(username, applianceEmissions, applianceEmissionDates):
         import matplotlib.pyplot as plt
