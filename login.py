@@ -15,7 +15,7 @@ def generate_session_id():
 
 #define the variable to verify the password
 def verify_password(username, login_attempts):
-    login_attempts = 0
+    #login_attempts = 0
     password = input("Please enter your password: ")
     cursor = dbConnection.db.cursor()
     exists_check = "SELECT username FROM user_details WHERE username = %s"
@@ -55,8 +55,30 @@ def verify_password(username, login_attempts):
                     print("User Not Found")
                     return False #no match in user_details table
             else:
-                import userClass
-                userClass.user.lockout(username)
+                print("Your account is locked, please contact support or use the forgotten password function")
+                import inquirer
+                lockout_question = [
+                    inquirer.List ('Unlock Choices',
+                           message = 'Please select unlock acount, forgotten password or close application:',
+                           choices = ["Forgotten password", "Unlock account", "Close application"],
+                    ),
+                ]
+            
+                account_management_answer = inquirer.prompt(lockout_question)
+                account_choice = (account_management_answer['Unlock Choices'])
+                if account_choice == "Forgotten password":
+                    from userClass import user
+                    user.forgot_password()
+                elif account_choice == "Unlock account":
+                    from userClass import user
+                    user.unlockAccount(username)
+                elif account_choice == "Close application":
+                    exit
+                else:
+                    print("Error encountered, please attempt to login again, or contact support")
+                    exit
+             #   from userClass import user
+              #  user.lockout(username)
                 #lockout = 1
                 #sql = "UPDATE user_details SET locked = %s WHERE username = %s"
                 #val = (lockout, username,)
@@ -65,6 +87,25 @@ def verify_password(username, login_attempts):
                 #print("Your account is locked, please contact support or use the forgotten password function")
         else:
             print("Your account is locked, please contact support or use the forgotten password function")
+            import inquirer
+            lockout_question = [
+                inquirer.List ('Unlock Choices',
+                               message = 'Please select unlock acount, forgotten password or close application:',
+                               choices = ["Forgotten password", "Unlock account", "Close application"],
+                           ),
+                ]
+            
+            account_management_answer = inquirer.prompt(lockout_question)
+            account_choice = (account_management_answer['Unlock Choices'])
+            if account_choice == "Forgotten password":
+                from userClass import user
+                user.forgot_password()
+            elif account_choice == "Unlock account":
+                from userClass import user
+                user.unlockAccount(username)
+            elif account_choice == "Close application":
+                exit
+                
     else:
         import inquirer
         #determine if user's average should be used for the day's emission calculation

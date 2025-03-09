@@ -7,7 +7,7 @@ class direction_picklist():
         direct_question = [
                inquirer.List('User Choice',
                              message = "Choose Task:",
-                             choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Log Appliance Emission", "View Emission Graph", "Log Out"]
+                             choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Log Appliance Emission", "View Emission Graphs", "Log Out"]
                           )
             ]
 
@@ -25,7 +25,7 @@ class direction_picklist():
         elif direction == "Log Appliance Emission":
             from ApplianceCalculator import retrieveAverage
             retrieveAverage(username)
-        elif direction == "View Emission Graph":
+        elif direction == "View Emission Graphs":
             from userClass import user
             user.sortAllData(username)
         elif direction == "Log Out":

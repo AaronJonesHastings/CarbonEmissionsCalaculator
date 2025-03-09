@@ -84,7 +84,7 @@ class user:
         import dbConnection
         mycursor = dbConnection.db.cursor()
         username = input("Please enter your username:\n")
-        email = input("Please enter your email address:\n")
+        #email = input("Please enter your email address:\n")
         sql = "SELECT email FROM user_details WHERE username = %s" #this way round in-case someone has multiple email addresses
         val = (username,)
         mycursor.execute(sql, val)
@@ -130,6 +130,34 @@ class user:
                 print("Your answer does not match our reords. Please contact support for further assistance, or try again.")
         else:
             print("No user found, please try again")
+            
+    def unlockAccount(username):
+        import dbConnection
+        mycursor = dbConnection.db.cursor()
+        sq_query = "SELECT security_question FROM user_details WHERE username = %s" #fetch security question
+        val = (username, )
+        mycursor.execute(sq_query, val)
+        result2 = mycursor.fetchone()
+        #remove excess formatting from query return
+        result2clean = str(result2).strip('(),')
+        result2clean = result2clean.replace("'", "")
+        print(f"Please answer the following question:\n{result2clean}")
+        answer = input()
+        sa_query = "SELECT security_answer FROM user_details WHERE username =%s"
+        mycursor.execute(sa_query, val,)
+        sa_answer = mycursor.fetchone()
+        #remove excess formatting from answer
+        saClean = str(sa_answer).strip('(),')
+        saClean = saClean.replace("'", "")
+        if answer == saClean:
+            unlockSQL = "UPDATE user_details SET locked = 0 WHERE username = %s"
+            val = (username, )
+            mycursor.execute(unlockSQL, val)
+            dbConnection.db.commit()
+            print("Account Unlocked\nReturning user to login page")
+            from login import verify_password
+            login_attempts = 0
+            verify_password(username, login_attempts)
             
     def lockout(username):
         import dbConnection
@@ -320,4 +348,4 @@ class user:
         
   
 #user.forgot_password()
-user.sortAllData("Admin")   
+#user.sortAllData("Admin")   
