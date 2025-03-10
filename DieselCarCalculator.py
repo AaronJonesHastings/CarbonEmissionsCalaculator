@@ -80,6 +80,7 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance):
             #global dieselCarEmissionsValue 
             #emissionsPerMinute = carEmission / 60
             #emissions = emissionsPerMinute * minutes
+            emissions = co2
             print(f"Carbon emission output for your drive of {car_reg} is {emissions}kgCO2e")
             dieselCarEmissionsValue = co2
             print(dieselCarEmissionsValue)
@@ -107,7 +108,7 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance):
             """
             mycursor = dbConnection.db.cursor()
             sql = "INSERT INTO car_emissions (user, date, vehicle, value) VALUES (%s, %s, %s, %s)"
-            val = (username, today, car_reg, dieselCarEmissionsValue)
+            val = (username, date_of_emission, car_reg, dieselCarEmissionsValue)
             mycursor.execute(sql, val)
             dbConnection.db.commit()
             print(mycursor.rowcount, "record inserted")

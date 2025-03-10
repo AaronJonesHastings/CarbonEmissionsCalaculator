@@ -91,7 +91,7 @@ def motorbikeEmissionsCalculation(username, motorbike_reg, motorbike, motorbikeT
             """
             mycursor = dbConnection.db.cursor()
             sql = "INSERT INTO car_emissions (user, date, vehicle, value) VALUES (%s, %s, %s, %s)"
-            val = (username, today, motorbike_reg, motorbikeEmissionsValue)
+            val = (username, date_of_emission, motorbike_reg, motorbikeEmissionsValue)
             mycursor.execute(sql, val)
             dbConnection.db.commit()
             print(mycursor.rowcount, "record inserted")
