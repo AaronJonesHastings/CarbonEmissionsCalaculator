@@ -53,11 +53,15 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance): #CREATE 
             #workout fuel used - distance/mpg
             #query SQL database for FE
             feSQL = "SELECT mpg FROM vehicle_details WHERE registration_number = %s"
-            val = (username, )
+            val = (car_reg, )
+            mycursor = dbConnection.db.cursor()
             mycursor.execute(feSQL, val)
-            mpg = mycursor.fetchone() #store SQL result in variable
-            mpg = float(mpg).strip('(),')
-            mpg = mpg.replace("'", "")
+            result = mycursor.fetchone() #store SQL result in variable
+            #print(mpg)
+            mpg = result[0]
+            #mpg = mpg.strip('(),')
+            #mpg = mpg.replace("'", "")
+            #mpg = float(mpg)
             print(f"MPG Result = {mpg}")
             
             fuelUsed = distance/mpg
@@ -69,14 +73,13 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance): #CREATE 
             co2 = fuelUsed * carEmission
 
             #get user input for minutes driven
-
-            minutes = input(f"How many minutes have you driven {car_reg} for this drive?\n") #CREATE CODE TO CONFIRM THIS IS A FLOAT. CREATE LENGTH CHECK
-            minutes = float(minutes) #convert user input to float for later manipulation
-
-            global petrolCarEmissionsValue 
+            """Redundant time calculation """
+            #minutes = input(f"How many minutes have you driven {car_reg} for this drive?\n") #CREATE CODE TO CONFIRM THIS IS A FLOAT. CREATE LENGTH CHECK
+            #minutes = float(minutes) #convert user input to float for later manipulation
             #emissionsPerMinute = carEmission / 60 #divide by 60 to get the emission/minute value
             #emissions = emissionsPerMinute * minutes #multiply by number of minutes driven
             #print(f"Carbon emission output for your drive of {car_reg} is {emissions}kgCO2e") #feedback to use the emissions for that drive
+            global petrolCarEmissionsValue 
             petrolCarEmissionsValue = co2
             #print(petrolCarEmissionsValue)
             #now get the date of the emission
@@ -164,5 +167,5 @@ def car_check(username, distance, car_reg):
         from registercar import vehicleCheck
         vehicleCheck(username, car_reg)
         
-username = input("Please provide your username: ")
+#username = input("Please provide your username: ")
 #car_check(username)

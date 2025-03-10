@@ -118,4 +118,4 @@ def verify_password(username, login_attempts):
         else:
             exit
 
-#verify_password(username, login_attempts)
+verify_password(username, login_attempts)
