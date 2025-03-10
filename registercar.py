@@ -35,7 +35,7 @@ def register_motorbike(username):
        
        #store answer
        bike_answer = inquirer.prompt(bike_question)
-       petrol_type = "Diesel"
+       petrol_type = "Petrol"
        bike_type = (bike_answer['Bike Type'])
        mpg = input("Please provide the mpg value for your car.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car")
        try:

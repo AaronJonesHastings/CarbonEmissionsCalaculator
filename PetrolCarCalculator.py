@@ -72,8 +72,8 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance): #CREATE 
             
             co2 = fuelUsed * carEmission
 
-            #get user input for minutes driven
             """Redundant time calculation """
+            #get user input for minutes driven
             #minutes = input(f"How many minutes have you driven {car_reg} for this drive?\n") #CREATE CODE TO CONFIRM THIS IS A FLOAT. CREATE LENGTH CHECK
             #minutes = float(minutes) #convert user input to float for later manipulation
             #emissionsPerMinute = carEmission / 60 #divide by 60 to get the emission/minute value
@@ -167,5 +167,5 @@ def car_check(username, distance, car_reg):
         from registercar import vehicleCheck
         vehicleCheck(username, car_reg)
         
-#username = input("Please provide your username: ")
+#username = input("Please provide your username: ")       
 #car_check(username)
