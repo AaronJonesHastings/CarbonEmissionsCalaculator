@@ -95,6 +95,9 @@ def motorbikeEmissionsCalculation(username, motorbike_reg, motorbike, motorbikeT
             mycursor.execute(sql, val)
             dbConnection.db.commit()
             print(mycursor.rowcount, "record inserted")
+            #give users the option to log more
+            from user_direct_class import direction_picklist
+            direction_picklist.page_direction(username)
         else:
             print("Error encountered")
 

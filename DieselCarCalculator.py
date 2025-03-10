@@ -112,6 +112,9 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance):
             mycursor.execute(sql, val)
             dbConnection.db.commit()
             print(mycursor.rowcount, "record inserted")
+            #give users the option to log more
+            from user_direct_class import direction_picklist
+            direction_picklist.page_direction(username)
         else:
             print("Error encountered")
 

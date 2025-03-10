@@ -250,7 +250,27 @@ class API:
             if distance > 0:
                 distance_miles = distance*miles
                 print(f"The estimated distance in miles is {distance_miles}")
-                from PetrolCarCalculator import car_check
-                car_check(username, distance_miles, car_reg)
+                #now find the vehicle type to import the corret calculator
+                sql_vehicle_type = "SELECT type FROM vehicle_details WHERE registration_number = %s"
+                val = (car_reg, )
+                mycursor.execute(sql_vehicle_type, (val,))
+                result = mycursor.fetchone()
+                if result is not None:
+                    if "petrol" in result:
+                        from PetrolCarCalculator import car_check
+                        car_check(username, distance_miles, car_reg)
+                    elif "motorbike" in result: #run motorbike first in-case of diesel motorbike
+                        from MotorbikeCalculator import motorbike_check
+                        motorbike_check(username, distance_miles, car_reg)
+                    elif "diesel" in result:
+                        from DieselCarCalculator import car_check
+                        car_check(username, distance_miles, car_reg)
+                    else:
+                        print("Error encountered, please try again")
+                        exit
+                else:
+                    print("Error enountered, please try again")
+                    exit
+                
                 
 #API.gather_info_call_API('Admin')
