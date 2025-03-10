@@ -1,8 +1,11 @@
 class direction_picklist():
-    def __init__(self, page_direction):
+    def __init__(self, page_direction, petrolCarChoices):
         self.page_direction = page_direction
+        self.petrolCarChoices = petrolCarChoices
+        
     
     def petrolCarChoices(username):
+        """Contains picklist for navigating petrol car related choices """
         import inquirer
         petrolDirect = [
             inquirer.List('Petrol Choice',
@@ -23,7 +26,9 @@ class direction_picklist():
             print("Error encountered")
             exit
     
+    
     def page_direction(username):
+        """Contains picklist for navigating around major modules"""
         import inquirer
         direct_question = [
                inquirer.List('User Choice',
