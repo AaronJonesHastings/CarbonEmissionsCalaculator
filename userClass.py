@@ -363,7 +363,114 @@ class user:
         
         #call graphing function
         user.totalGraphing(username, emissionValues, emissionDates)
+    
+    def setLinkedUser(username):
+        import dbConnection #to enable outreach to SQL database
+        #take username of account to link to
+        username2 = input("Please provide the username of the account you wish to link\n")
+        cursor = dbConnection.db.cursor()
+        sql = "SELECT pending_links FROM user_details WHERE username = %s"
+        val = username,
+        cursor.execute(sql, val) #execute the SQL query
+        user_result = cursor.fetchall() #store sql result in variable
+        print(user_result)
+        for item in user_result:
+            pending_list = [u.strip() for u in item[0].split(',') if u.strip()] #converts string to a list of usernames
+            print(pending_list)
+            if username2 in pending_list:
+                print(f"Account linkage request awaiting review by {username}")
+                from user_direct_class import direction_picklist
+                direction_picklist.page_direction(username)
+            else:
+                import inquirer
+                query_update = [
+                    inquirer.List('Add linked user',
+                                  message = f"Would you like to link your account to {username2}'s?",
+                                  choices = ["Yes", "No"],
+                              ),
+                    ]
+                query_answer = inquirer.prompt(query_update)
+                choice = query_answer['Add linked user']
+                if choice == "Yes":
+                    
+                    sql1 = "SELECT username FROM user_details WHERE username = %s"
+                    val1 = username2,
+                    cursor.execute(sql1, val1)
+                    user_check = cursor.fetchone()
+                    if username2 in user_check[0]:
+                        """Update user 1"""
+                        #IFNULL used below to concatenate, as otherwise you would often concatenate to a blank field which will not work
+                        sql2 = "UPDATE user_details SET pending_links = CONCAT(IFNULL(pending_links, ''), ', ', %s) WHERE username = %s" #sending to pending links column to await approval
+                        val2 = (username, username2)
+                        cursor.execute(sql2, val2)
+                        dbConnection.db.commit()
+                        print(f"Account link request sent to {username} for approval")
+                        from user_direct_class import direction_picklist
+                        print("Please pick an action")
+                        direction_picklist.page_direction(username)
+                    else:
+                        print("The user you are trying to link to has not been found, please try again")
+                        user.setLinkedUser(username)
+
+                
+                else:
+                    user.setLinkedUser(username)
+     
+    def approve_links(username):
+        import dbConnection
+        cursor = dbConnection.db.cursor()
+        sql = "SELECT pending_links FROM user_details WHERE username = %s"
+        val = (username,)
+        cursor.execute(sql, val)
+        pending_list = [] #initialises an empty list to store any pending approvals in after retrieval
+        pending_results = cursor.fetchall()
+        #strip any leading and trailing commas
+        #pending_results = pending_results.lstrip(',')
+        #pending_results = pending_results.rstrip(',')
+        #print(pending_results)
+        for item in pending_results:
+            if item[0]:
+                #item.append(pending_list)
+                pending_list.extend([u.strip() for u in item[0].split(',') if u.strip()])
+        print(pending_list)
+        import inquirer
+        query_link = [
+                    inquirer.List('Approve Link',
+                                  message = f"Would you like to link your account?",
+                                  choices = ["Yes", "No"],
+                              ),
+                    ]
+        query_answer = inquirer.prompt(query_link)
+        """Now loop through pending_list and execute sql as needed """
+        """
+        for item in pending_list:
+            print(f"You have a pending link request from {pending_list[0]}")
+            choice = query_answer['Approve Link']
+            if choice == "Yes":
+                    sql = "UPDATE user_details SET linked_accounts = CONCAT(IFNULL(linked_accounts, ''), ', ', %s) WHERE username = %s"
+                    val = (item, username)
+                    cursor.execute(sql, val)
+                    dbConnection.db.commit()
+                    pending_list.remove(item)
+            else:
+                pending_list.remove(item)
+        """
         
+        #The below has a bug and will approve all requests regardless of how many are present, this will need rectifying
+        while pending_list:
+            item = pending_list.pop(0)    
+            print(f"You have a pending link request from {item}")
+            choice = query_answer['Approve Link']
+            if choice == "Yes":
+                    sql = "UPDATE user_details SET linked_accounts = CONCAT(IFNULL(linked_accounts, ''), ', ', %s) WHERE username = %s"
+                    val = (item, username)
+                    cursor.execute(sql, val)
+                    dbConnection.db.commit()
+        print("Your pending approvals: ")
+        print(pending_list)
+        print("Records updated.\nPlease pick an action:")
+        from user_direct_class import direction_picklist
+        direction_picklist.page_direction(username)
   
 #user.forgot_password()
-#user.sortAllData("Admin")   
+#user.sortAllData("Admin")

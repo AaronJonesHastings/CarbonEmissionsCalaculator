@@ -72,14 +72,38 @@ class direction_picklist():
             print("Error encountered")
             exit
     
-    
+    def accountChoices(username):
+        """Contains picklist for managing a user's account"""
+        import inquirer
+        accountDirection = [
+            inquirer.List('Account Choice',
+                          message = "Please select an option below",
+                          choices = ["Change My Password", "Link An Account", "View My Link Requests", "Register a Vehicle"]
+                      ),
+            ]
+        user_choice = inquirer.prompt(accountDirection)
+        direction = user_choice['Account Choice']
+        if direction == "Change My Password":
+            from userClass import user
+            user.change_password()
+        elif direction == "Link An Account":
+            from userClass import user
+            user.setLinkedUser(username)
+        elif direction == "View My Link Requests":
+            from userClass import user
+            user.approve_links(username)
+        elif direction == "Register a Vehicle":
+            from registercar import vehicleCheck
+            vehicleCheck(username)
+        
+
     def page_direction(username):
         """Contains picklist for navigating around major modules"""
         import inquirer
         direct_question = [
                inquirer.List('User Choice',
                              message = "Choose Task:",
-                             choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Log Appliance Emission", "View Emission Graphs", "Log Out"]
+                             choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Log Appliance Emission", "View Emission Graphs", "Manage My Account", "Log Out"]
                           )
             ]
 
@@ -97,6 +121,8 @@ class direction_picklist():
         elif direction == "View Emission Graphs":
             from userClass import user
             user.sortAllData(username)
+        elif direction == "Manage My Account":
+            direction_picklist.accountChoices(username)
         elif direction == "Log Out":
             exit
         else:
