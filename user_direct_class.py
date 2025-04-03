@@ -120,7 +120,7 @@ class direction_picklist():
             retrieveAverage(username)
         elif direction == "View Emission Graphs":
             from userClass import user
-            user.sortAllData(username)
+            user.selectUserForTrending(username)
         elif direction == "Manage My Account":
             direction_picklist.accountChoices(username)
         elif direction == "Log Out":

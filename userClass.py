@@ -1,4 +1,4 @@
-global vehicleEmissions
+﻿global vehicleEmissions
 global applianceEmissions
 global vehicleEmissionDates
 global applianceEmissionDates
@@ -220,7 +220,45 @@ class user:
         style.use("ggplot")
         plt.grid(True)
         plt.show()
-    
+        
+    def selectUserForTrending(username):
+        import inquirer
+        query_user  = [
+            inquirer.List('User For Trending',
+                      message = f"Would you like to view your data or a linked user's?",
+                      choices = ["My own", "A linked user's"],
+                  ),
+            ]
+        query_answer = inquirer.prompt(query_user)
+        choice = query_answer['User For Trending']
+        if choice == "My own": #i.e. if viewing your own data
+            user.retrieveEmissionsWithDate(username) #initiate graphing process
+        #now to handle how to import a linked account's data
+        else:
+            import dbConnection
+            cursor = dbConnection.db.cursor()
+            sql = "SELECT linked_accounts FROM user_details WHERE username = %s" #retrieve linked accounts from the SQL table
+            val = (username,)
+            cursor.execute(sql, val)
+            linked_accounts = [] #initiate list to store account options in
+            linked_results = cursor.fetchall()
+            #print(linked_results) #debugging
+            for item in linked_results:
+                linked_accounts = [u.strip() for u in item[0].split(',') if u.strip()]
+            #print(linked_accounts)
+            linked_accounts = linked_results[0][0].lstrip(', ').split(', ') #clean data, stip leading commas and store in the linked_accounts list
+            #linked_accounts = list(dict.fromkeys(linked_accounts)) #remove any duplication, mmay not be needed
+            #print(linked_accounts) #debugging
+            """Now to allow the user to select the account to import data for"""
+            from pick import pick
+            title = "Select a username:"
+            selected_account, _ = pick(linked_accounts, title)
+            print(f"You have selected: {selected_account}")
+            linked_user = selected_account.strip(' ,')
+            print(linked_user)
+            #now call the retrieveEmissionsWithDate function
+            user.retrieveEmissionsWithDate(linked_user)
+
     def retrieveEmissionsWithDate(username):
         import dbConnection
         from datetime import date
@@ -282,6 +320,8 @@ class user:
         
         print(f"Appliance emissions = {applianceEmissions}")
         print(f"Appliance emission dates = {applianceEmissionDates}")
+        
+
         
         user.graphAppliances(username, applianceEmissions, applianceEmissionDates)
         user.graphVehicles(username, vehicleEmissions, vehicleEmissionDates)
