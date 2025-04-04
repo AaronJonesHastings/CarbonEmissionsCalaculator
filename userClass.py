@@ -308,8 +308,8 @@ class user:
         
         vehicleEmissions = [item[0] for item in sorted_data]
         
-        print(f"Vehicle Emissions = {vehicleEmissions}")
-        print(f"Vehicle Emission Dates = {vehicleEmissionDates}")
+        #print(f"Vehicle Emissions = {vehicleEmissions}")
+        #print(f"Vehicle Emission Dates = {vehicleEmissionDates}")
         
         #repeat above for appliance emissions
         data2 = applianceEmissions
@@ -318,13 +318,33 @@ class user:
         applianceEmissionDates = [date.isoformat(item) for item in applianceEmissionDates]
         applianceEmissions = [item[0] for item in sorted_data2]
         
-        print(f"Appliance emissions = {applianceEmissions}")
-        print(f"Appliance emission dates = {applianceEmissionDates}")
+       #print(f"Appliance emissions = {applianceEmissions}")
+        #print(f"Appliance emission dates = {applianceEmissionDates}")
         
-
-        
-        user.graphAppliances(username, applianceEmissions, applianceEmissionDates)
-        user.graphVehicles(username, vehicleEmissions, vehicleEmissionDates)
+        import inquirer
+        from user_direct_class import direction_picklist
+        graph_question = [
+                    inquirer.List('Graph to View',
+                                  message = f"Please select the emission graph you wish to view:",
+                                  choices = ["Appliances", "Vehicles", "Both"],
+                              ),
+                    ]
+        graph_answer = inquirer.prompt(graph_question)
+        choice = graph_answer['Graph to View']
+        if choice == "Appliances":
+            user.graphAppliances(username, applianceEmissions, applianceEmissionDates)
+            direction_picklist.page_direction(username)
+        elif choice == "Vehicles":
+            user.graphVehicles(username, vehicleEmissions, vehicleEmissionDates)
+            direction_picklist.page_direction(username)
+        elif choice == "Both":
+            user.graphAppliances(username, applianceEmissions, applianceEmissionDates)
+            user.graphVehicles(username, vehicleEmissions, vehicleEmissionDates)
+            direction_picklist.page_direction(username)
+        else:
+            print("Error encountered, choice not recgonised./nPlease try again.")
+            direction_picklist.page_direction(username)
+            
         
     def sortAllData(username):
         import dbConnection
