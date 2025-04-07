@@ -108,9 +108,9 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance): #CREATE 
             val = (username, date_of_emission, car_reg, petrolCarEmissionsValue)
             mycursor.execute(sql, val)
             dbConnection.db.commit() #commit the SQL insertion
-            print(mycursor.rowcount, "record inserted")
+            print(mycursor.rowcount, "record inserted") #user confirmation that their record has been updated. 
             from user_direct_class import direction_picklist
-            direction_picklist.page_direction(username)
+            direction_picklist.page_direction(username) #send user back to the main menu
         else:
             print("Error encountered")
 

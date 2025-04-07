@@ -161,13 +161,13 @@ class user:
             
     def lockout(username):
         import dbConnection
-        sql = "UPDATE user_details SET locked = %s WHERE username = %s"
+        sql = "UPDATE user_details SET locked = %s WHERE username = %s" #set the lockout status to "1! in SQL server
         locked = '1'
         val = (locked, username)
         mycursor = dbConnection.db.cursor()
-        mycursor.execute(sql, val)
-        dbConnection.db.commit()
-        print("Account locked due to too many inorrect password entries. Please contact support to unlock your account, or select forgot password")
+        mycursor.execute(sql, val) #execute sql statement
+        dbConnection.db.commit() #commit the change
+        print("Account locked due to too many inorrect password entries. Please contact support to unlock your account, or select forgot password") #print error message for the user
         import inquirer
         lockout_question = [
             inquirer.List ('Unlock Choices',
@@ -177,15 +177,15 @@ class user:
             ]
             
         account_management_answer = inquirer.prompt(lockout_question)
-        account_choice = (account_management_answer['Unlock Choices'])
+        account_choice = (account_management_answer['Unlock Choices']) #allow users to select their next action
         if account_choice == "Forgotten password":
             from userClass import user
-            user.forgot_password()
+            user.forgot_password() #initiate the forgotten password sequence - i.e. change password
         elif account_choice == "Unlock account":
             from userClass import user
-            user.unlockAccount(username)
+            user.unlockAccount(username) #initiate the unlock sequence - which will change the lockout status to 0 after passing security checks
         elif account_choice == "Close application":
-            exit
+            exit #exit the application
         
     def graphAppliances(username, applianceEmissions, applianceEmissionDates):
         import matplotlib.pyplot as plt
@@ -250,9 +250,12 @@ class user:
             #linked_accounts = list(dict.fromkeys(linked_accounts)) #remove any duplication, mmay not be needed
             #print(linked_accounts) #debugging
             """Now to allow the user to select the account to import data for"""
+            #import colorama
+            #from colorama import just_fix_windows_console
             from pick import pick
             title = "Select a username:"
             selected_account, _ = pick(linked_accounts, title)
+            #just_fix_windows_console()
             print(f"You have selected: {selected_account}")
             linked_user = selected_account.strip(' ,')
             print(linked_user)

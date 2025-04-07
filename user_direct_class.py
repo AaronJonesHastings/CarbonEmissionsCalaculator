@@ -97,35 +97,36 @@ class direction_picklist():
             vehicleCheck(username)
         
 
-    def page_direction(username):
+    def page_direction(username): #the main menu
         """Contains picklist for navigating around major modules"""
         import inquirer
         direct_question = [
                inquirer.List('User Choice',
                              message = "Choose Task:",
                              choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Log Appliance Emission", "View Emission Graphs", "Manage My Account", "Log Out"]
+                             #choices above direct users to each major module within the software
                           )
             ]
 
         user_choice = inquirer.prompt(direct_question)
         direction = user_choice['User Choice']
         if direction == "Log Petrol Car Emission":
-            direction_picklist.petrolCarChoices(username)
+            direction_picklist.petrolCarChoices(username) #call the petrol car sub menu
         elif direction == "Log Diesel Car Emission":
-            direction_picklist.dieselCarChoices
+            direction_picklist.dieselCarChoices #call the diesel car sub menu
         elif direction == "Log Motorbike Emission":
-            direction_picklist.motorbikeChoices
+            direction_picklist.motorbikeChoices #call the motorbike sub menu
         elif direction == "Log Appliance Emission":
             from ApplianceCalculator import retrieveAverage
-            retrieveAverage(username)
+            retrieveAverage(username) #call the retrieveAverage function
         elif direction == "View Emission Graphs":
-            from userClass import user
-            user.selectUserForTrending(username)
+            from userClass import user #import the user class
+            user.selectUserForTrending(username) #call the selectUserForTrending function
         elif direction == "Manage My Account":
-            direction_picklist.accountChoices(username)
+            direction_picklist.accountChoices(username) #call the accountChoices sub menu
         elif direction == "Log Out":
-            exit
+            exit #log out by terminating the application
         else:
             print("Error Encountered")
-            exit
+            exit #close the application due to an unknown error
             
