@@ -537,3 +537,70 @@ class user:
   
 #user.forgot_password()
 #user.sortAllData("Admin")
+
+    def useVehicleAverage(username): #pull user vehicle averages and provide option to resubmit using a new date
+        import dbConnection
+        cursor = dbConnection.db.cursor()
+        #create and execute sql statement
+        sql = "SELECT drive_name FROM drive_averages WHERE user = %s"
+        val = (username,)
+        cursor.execute(sql, val)
+        #manipulate sql returns into picklist
+        drive_list = cursor.fetchall()
+        print(drive_list) #testing
+        #store the route names and present them as picklist options
+        route_names = [] #initiate list to store route names to be accessed by a picklist
+        for item in drive_list:
+            if item[0]:
+                route_names.append(item[0])
+        #print(route_names)#testing
+        #now turn the route_names items into a picklist using tkinter
+        import tkinter
+        from tkinter import ttk
+        root = tkinter.Tk()
+        root.title("Please select your route") #sets up the window
+        selected_route = tkinter.StringVar()
+        #create the GUI
+        combo = ttk.Combobox(root, values=route_names, state="readonly", textvariable=selected_route)
+        combo.pack(padx=30, pady=30)
+        combo.set("Please select your route")
+        combo.bind("<<ComboboxSelected>>", lambda e: print(f"Selected inside GUI: {selected_route.get()}")) #used to allow us to reference the variable at a later date
+        root.mainloop()
+        my_route = selected_route.get()
+        print(my_route) #to store the selected option from tkinter
+        #now pull the relevant data from mysql
+        sql2 = "SELECT vehicle_reg, drive_emission FROM drive_averages WHERE User = %s AND drive_name = %s"
+        vals = (username, my_route)
+        cursor.execute(sql2, vals)
+        results = cursor.fetchone()
+        #print(results)
+        car_reg = results[0] #store car_reg value
+        value = results[1] #store emissions value
+        #print(car_reg)
+        #print(value)
+        """Retrieve date of drive using code taken from PetrolCarCalculator.carEmissionsCalculation"""
+        import inquirer
+        import datetime
+        from datetime import date
+        date_question = [
+        inquirer.List('Date of Emission',
+                      message = "Was ths emission from today?",
+                      choices = [ "Yes","No"], #establish picklist
+            ),
+        ]
+        date_answer = inquirer.prompt(date_question)
+        choice = date_answer['Date of Emission']
+     
+        if choice == "Yes":
+            date_of_emission = date.today() #use today's date
+        else: #if drive not from today
+            date_of_emission = input("Please input the date of these emissions: ")
+            date_of_emission = datetime.datetime.strptime(date_of_emission, "%d/%m/%Y") #format the date based on user input
+            
+        """Now send data to SQL server"""
+        sql3 = "INSERT INTO car_emissions (user, date, vehicle, value) VALUES (%s, %s, %s, %s)"
+        val3 = (username, date_of_emission, car_reg, value)
+        cursor.execute(sql3, val3)
+        dbConnection.db.commit()
+        from user_direct_class import direction_picklist
+        direction_picklist.page_direction(username) #send user back to the main menu

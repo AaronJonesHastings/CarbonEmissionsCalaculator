@@ -11,8 +11,8 @@ class direction_picklist():
         import inquirer
         petrolDirect = [
             inquirer.List('Petrol Choice',
-                          message = "Would you like to log a new emission or log an average?",
-                          choices = ["Log an emission", "Log an average"]
+                          message = "Would you like to log a new emission or log a new average?",
+                          choices = ["Log an emission", "Use a previous average", "Log a new average"]
                       )
             ]
         user_choice = inquirer.prompt(petrolDirect)
@@ -21,11 +21,14 @@ class direction_picklist():
             car_reg = input("Please input your car's registration number: ")
             from APIClass import API
             API.API_callout_for_calculator(username, car_reg)
-        elif direction == "Log an average":
+        elif direction == "Use a previous average":
+            from userClass import user
+            user.useVehicleAverage(username)
+        elif direction == "Log a new average":
             from APIClass import API
             API.gather_info_call_API(username)
         else:
-            print("Error encountered")
+            print("Error encountered, invalid choice selected")
             exit
             
     def dieselCarChoices(username):
