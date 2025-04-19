@@ -9,7 +9,7 @@ def hash_password(password):
     #Generate the salt
     salt = bcrypt.gensalt()
     #now hash the password with the salt
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt) #define encryption (UTF-8) and combine with salt
     print(hashed_password)
     return hashed_password
 
@@ -22,14 +22,14 @@ def userSignUp():
     Surname = input("Please enter your surname: ")
     email = input("Please provide an email address :")
     dob = input("Please enter your date of birth (dd/mmm/YYYY): ")
-    useableDOB = datetime.datetime.strptime(dob, "%d/%m/%Y") #check how to handle DOB format errors
+    useableDOB = datetime.datetime.strptime(dob, "%d/%m/%Y") #Format DOB
     username = input("Please enter a username: ")
     #Check if user already exists
     cursor = dbConnection.db.cursor() #get cursor from dbConnection.py
     sql = "SELECT username FROM user_details WHERE username = %s" #SQL query to pass
     cursor.execute(sql, (username,)) #execute the SQL
     result = cursor.fetchone() #store restult in variable
-    if result:
+    if result: #user exists, redirect to login screen
         
         print("User already exists, please try logging in")
         from login import verify_password
