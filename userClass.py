@@ -49,32 +49,39 @@ class user:
                 stored_hash = result2[0].encode('utf-8') #get hash in bytes
                 #now verify the password against the stored hash
                 if bcrypt.checkpw(currentPassword.encode('utf-8'), stored_hash):
-                    newPassword = input("Please enter your new password: ")
-                    if len(newPassword) < 10:
-                        print("Password must be 10 charcaters or greater")
-                        return user.change_password()
+                    import string
+                    import getpass
+                    while True:
+                        newPassword = getpass.getpass("Please enter your chosen password:\n")
+                        is_valid = all(( #check all 4 conditions below are met
+                            len(newPassword) >= 8,#check character length is at least 8 
+                            any(c.isalpha() for c in newPassword), #checks for the presence of an alpha character
+                            any(c.isdigit() for c in newPassword), #checks for a numeric character
+                            any(c in string.punctuation for c in newPassword) #checks for a special character
+                        ))
+                        if is_valid:
+                            break
+                        print("Password must contain a number and special character, and be at least 8 characters long\n")
+                    verify_password = getpass.getpass("Please enter your password again:\n")
+                    if newPassword != verify_password:                   
+                        print("Your chosen password does not match, please try again.")
+                        user.change_password()
                     else:
-                        comparePassword = input("Please enter your new password again: ")
-                        if newPassword != comparePassword:
-                            print("Your chosen password does not match, please try again.")
-                            user.change_password()
-                        else:
-                            #hash newPassword variable and upload
-                            salt = bcrypt.gensalt()
-                            hashed_password = bcrypt.hashpw(newPassword.encode('utf-8'), salt)
-                            sql = "UPDATE user_details SET password = %s WHERE username = %s"
-                            val = (hashed_password, username)
-                            mycursor.execute(sql, val)
-                            dbConnection.db.commit()
-                            print("Password successfully updated")
-                            print(f"Rows affected: {mycursor.rowcount}")
+                        #hash newPassword variable and upload
+                        salt = bcrypt.gensalt()
+                        hashed_password = bcrypt.hashpw(newPassword.encode('utf-8'), salt)
+                        sql = "UPDATE user_details SET password = %s WHERE username = %s"
+                        val = (hashed_password, username)
+                        mycursor.execute(sql, val)
+                        dbConnection.db.commit()
+                        print("Password successfully updated")
+                        print(f"Rows affected: {mycursor.rowcount}")
                 else:
                     print("Password incorrect, please contact support or use the 'forgot password' option")
                     return
             else:
-                print("Error encountered, please try again or contact support")
-                return
-        
+                print("Unexpexted connectivity error encountered, please try again")
+                user.change_password()
         else:
             print("Error: user not found, please try again or contact support")
             return
@@ -105,31 +112,43 @@ class user:
             saClean = str(sa_answer).strip('(),')
             saClean = saClean.replace("'", "")
             if answer == saClean:
-                import bcrypt    
-                newPassword = input("Please enter your new password: ")
-                if len(newPassword) < 10:
-                    print("Password must be 10 charcaters or greater")
-                    return user.forgot_password()
+                import bcrypt
+                import getpass #used to hide password input
+                import string
+                while True:
+                    newPassword = getpass.getpass("Please enter your chosen password:\n")
+                    is_valid = all(( #check all 4 conditions below are met
+                        len(newPassword) >= 8,#check character length is at least 8 
+                        any(c.isalpha() for c in newPassword), #checks for the presence of an alpha character
+                        any(c.isdigit() for c in newPassword), #checks for a numeric character
+                        any(c in string.punctuation for c in newPassword) #checks for a special character
+                    ))
+                    if is_valid:
+                        break
+                    print("Password must contain a number and special character, and be at least 8 characters long\n")
+                verify_password = getpass.getpass("Please enter your password again:\n")
+                if newPassword != verify_password:                   
+                    print("Your chosen password does not match, please try again.")
+                    user.forgot_password()
                 else:
-                    comparePassword = input("Please enter your new password again: ")
-                    if newPassword != comparePassword:
-                        print("Your chosen password does not match, please try again.")
-                        user.forgot_password()
-                    else:
-                        #hash newPassword variable and upload
-                        salt = bcrypt.gensalt()
-                        hashed_password = bcrypt.hashpw(newPassword.encode('utf-8'), salt)
-                        locked = 0
-                        sql = "UPDATE user_details SET password = %s, locked = %s WHERE username = %s"
-                        val = (hashed_password, locked, username)
-                        mycursor.execute(sql, val,)
-                        dbConnection.db.commit()
-                        print("Password successfully updated")
-                        print(f"Rows affected: {mycursor.rowcount}")
+                    #hash newPassword variable and upload
+                    salt = bcrypt.gensalt()
+                    hashed_password = bcrypt.hashpw(newPassword.encode('utf-8'), salt)
+                    locked = 0
+                    sql = "UPDATE user_details SET password = %s, locked = %s WHERE username = %s"
+                    val = (hashed_password, locked, username)
+                    mycursor.execute(sql, val,)
+                    dbConnection.db.commit()
+                    print("Password successfully updated")
+                    print(f"Rows affected: {mycursor.rowcount}")
+                    from user_direct_class import direction_picklist
+                    direction_picklist.page_direction(username)
             else:
                 print("Your answer does not match our reords. Please contact support for further assistance, or try again.")
+                exit
         else:
             print("No user found, please try again")
+            exit
             
     def unlockAccount(username):
         import dbConnection
