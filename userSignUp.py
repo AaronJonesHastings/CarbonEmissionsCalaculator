@@ -20,25 +20,32 @@ def userSignUp():
     """
     Forename = input("Please enter your first name: ")
     Surname = input("Please enter your surname: ")
-    email = input("Please provide an email address :")
+    email = input("Please provide an email address: ")
     dob = input("Please enter your date of birth (dd/mmm/YYYY): ")
     useableDOB = datetime.datetime.strptime(dob, "%d/%m/%Y") #Format DOB
-    username = input("Please enter a username: ")
+    while True:
+            username = input("Please enter a username: ")
+            is_valid = all(( #check all consitions are met
+                len(username) > 8, #check character length is at least 8
+                len(username) < 21 #check character length is no greater than 20
+            ))
+            if is_valid:
+                break
+            print("Username must be between 8 and 20 charcaters long. Please try again. \n")
     #Check if user already exists
     cursor = dbConnection.db.cursor() #get cursor from dbConnection.py
     sql = "SELECT username FROM user_details WHERE username = %s" #SQL query to pass
     cursor.execute(sql, (username,)) #execute the SQL
     result = cursor.fetchone() #store restult in variable
     if result: #user exists, redirect to login screen
-        
-        print("User already exists, please try logging in")
+        print("User already exists, please try logging in or try again with a different username")
         from login import verify_password
         
     else: #if user does not exist
         import getpass #used to hide password input
         import string
         while True:
-            password = getpass.getpass("Please enter your chosen password:\n")
+            password = getpass.getpass("Please enter your chosen password: \n")
             is_valid = all(( #check all 4 conditions below are met
                 len(password) >= 8,#check character length is at least 8 
                 any(c.isalpha() for c in password), #checks for the presence of an alpha character
@@ -47,8 +54,8 @@ def userSignUp():
             ))
             if is_valid:
                 break
-            print("Password must contain a number and special character, and be at least 8 characters long\n")
-        verify_password = getpass.getpass("Please enter your password again:\n")
+            print("Password must contain a number and special character, and be at least 8 characters long \n")
+        verify_password = getpass.getpass("Please enter your password again: \n")
         if verify_password == password: #check that first passowrd input matches the second password input
             salt = bcrypt.gensalt() #generate the salt
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt) #encrpy the password using utf-8 and attach the salt

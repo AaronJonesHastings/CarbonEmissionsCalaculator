@@ -77,26 +77,26 @@ class direction_picklist():
     
     def accountChoices(username):
         """Contains picklist for managing a user's account"""
-        import inquirer
-        accountDirection = [
-            inquirer.List('Account Choice',
-                          message = "Please select an option below",
-                          choices = ["Change My Password", "Link An Account", "View My Link Requests", "Register a Vehicle"]
+        import inquirer #import the inquirer module
+        accountDirection = [ #initiate list
+            inquirer.List('Account Choice', #calls the List class from inquirer
+                          message = "Please select an option below", #prompt displayed to the user
+                          choices = ["Change My Password", "Link An Account", "View My Link Requests", "Register a Vehicle"] #choices the user picks from
                       ),
             ]
-        user_choice = inquirer.prompt(accountDirection)
-        direction = user_choice['Account Choice']
+        user_choice = inquirer.prompt(accountDirection) #calls the question and displays it for the user
+        direction = user_choice['Account Choice'] #stores the user's answer to the question
         if direction == "Change My Password":
             from userClass import user
-            user.change_password()
+            user.change_password() #import user class and the change_password function
         elif direction == "Link An Account":
-            from userClass import user
+            from userClass import user #import user class and call the setLinkedUser function
             user.setLinkedUser(username)
         elif direction == "View My Link Requests":
-            from userClass import user
+            from userClass import user #import user class and call the approve_links function
             user.approve_links(username)
         elif direction == "Register a Vehicle":
-            from registercar import vehicleCheck
+            from registercar import vehicleCheck #imports the vehicleCheck function from registercar
             vehicleCheck(username)
         
 

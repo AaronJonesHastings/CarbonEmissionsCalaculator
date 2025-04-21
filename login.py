@@ -1,7 +1,6 @@
 import dbConnection #imports the database details
-import bcrypt
+import bcrypt #library used for decryption
 global login_attempts
-from user_direct_class import direction_picklist #library used for decryption
 
 #get user details at login
 
@@ -16,7 +15,8 @@ def generate_session_id():
 #define the variable to verify the password
 def verify_password(username, login_attempts):
     #login_attempts = 0
-    password = input("Please enter your password: ")
+    import getpass
+    password = getpass.getpass("Please enter your password: ")
     cursor = dbConnection.db.cursor()
     exists_check = "SELECT username FROM user_details WHERE username = %s"
     val = (username,)
