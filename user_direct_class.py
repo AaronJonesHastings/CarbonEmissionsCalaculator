@@ -1,9 +1,11 @@
 class direction_picklist():
-    def __init__(self, page_direction, petrolCarChoices, dieselCarChoices, motorbikeChoices):
+    def __init__(self, page_direction, petrolCarChoices, dieselCarChoices, motorbikeChoices, accountChoices):
         self.page_direction = page_direction
         self.petrolCarChoices = petrolCarChoices
         self.dieselCarChoices = dieselCarChoices
         self.motorbikeChoices = motorbikeChoices
+        self.accountChoices = accountChoices
+        
         
     
     def petrolCarChoices(username):
