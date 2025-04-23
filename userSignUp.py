@@ -26,8 +26,8 @@ def userSignUp():
     while True:
             username = input("Please enter a username: ")
             is_valid = all(( #check all consitions are met
-                len(username) > 8, #check character length is at least 8
-                len(username) < 21 #check character length is no greater than 20
+                len(username) > 7, #check character length is at least 8
+                len(username) < 20 #check character length is no greater than 20
             ))
             if is_valid:
                 break

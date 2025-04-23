@@ -1,5 +1,7 @@
 import dbConnection
 import inquirer
+
+from user_direct_class import direction_picklist
 #from Dictionaries import users_cars
 
 #define function for motorbike registration
@@ -11,9 +13,9 @@ def register_motorbike(username):
     result = cursor.fetchone() #store restult in variable
 
     if result:
-       bike_reg = input("Please provide your motorbike's registration number: ")
+       bike_reg = input("Please provide your motorbike's registration number:\n")
        if len(bike_reg) < 7: #if reg too short
-            print("Bike registration too short, please enter again")
+            print("Bike registration too short, please enter again.\n")
             exit
        elif len(bike_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
             reg_list = []
@@ -23,8 +25,8 @@ def register_motorbike(username):
        else:
             bike_reg = bike_reg.upper() #make upper case      
        bike_reg = bike_reg.upper() #format correctly
-       bike_make = input("Please provide your make of motorbike: ")
-       bike_model = input("Please provide the model of your motorbike: ")
+       bike_make = input("Please provide your make of motorbike:\n")
+       bike_model = input("Please provide the model of your motorbike:\n")
 
        bike_question = [
        inquirer.List('Bike Type',
@@ -37,11 +39,11 @@ def register_motorbike(username):
        bike_answer = inquirer.prompt(bike_question)
        petrol_type = "Petrol"
        bike_type = (bike_answer['Bike Type'])
-       mpg = input("Please provide the mpg value for your car.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car")
+       mpg = input("Please provide the mpg value for your car.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car:\n")
        try:
             float(mpg)
        except ValueError:
-            print("MPG value must be numeric.\nPlease try again")
+            print("MPG value must be numeric.\nPlease try again.\n")
             exit
        owner = username
        mycursor = dbConnection.db.cursor()
@@ -50,8 +52,13 @@ def register_motorbike(username):
        mycursor.execute(sql, val)
        dbConnection.db.commit()
        print(mycursor.rowcount, "record inserted")
+       import user_direct_class
+       direction_picklist.page_direction(username)
     else:
-        print("Account does not exist")
+        print("Account does not exist, please try logging in again.\n")
+        from login import verify_password
+        verify_password()
+        
 
 #define function for car registration
 def registercar(username):
@@ -62,10 +69,10 @@ def registercar(username):
     result = cursor.fetchone() #store restult in variable
 
     if result:
-        car_reg = input("Please provide your car registration number: ")
+        car_reg = input("Please provide your car registration number:\n")
         car_reg = car_reg.upper()
         if len(car_reg) < 7: #if reg too short
-            print("Car registration too short, please enter again")
+            print("Car registration too short, please enter again.\n")
             exit
         elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
             reg_list = []
@@ -74,8 +81,8 @@ def registercar(username):
             car_reg = car_reg.upper() #make upper case
         else:
             car_reg = car_reg.upper() #make upper case
-        car_make = input("Please provide your make of car: ")
-        car_model = input("Please provide the model of your car: ")
+        car_make = input("Please provide your make of car:\n")
+        car_model = input("Please provide the model of your car:\n")
         #establish input questions for vehicle and petrol types
         car_question = [
             inquirer.List('Vehicle Type',
@@ -102,20 +109,24 @@ def registercar(username):
         #print(car_type)
         #print(petrol_type)
         #establish mpg value - taken from fuelly website for test purposes - https://www.fuelly.com/car    
-        mpg = input("Please provide the mpg value for your car.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car")
+        mpg = input("Please provide the mpg value for your car.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car.\n")
         try:
             float(mpg)
         except ValueError:
-            print("MPG value must be numeric.\nPlease try again")
+            print("MPG value must be numeric.\nPlease try again.\n")
             exit
         mycursor = dbConnection.db.cursor()
         sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, mpg, owner) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         val = (car_reg, car_make, car_model, car_type, petrol_type, mpg, owner)
         mycursor.execute(sql, val)
         dbConnection.db.commit()
-        print(mycursor.rowcount, "record inserted")
+        print(mycursor.rowcount, "record inserted\n")
+        import user_direct_class
+        direction_picklist.page_direction(username)
     else:
-        print("Account does not exist")
+        print("Account does not exist, please try logging in again.\n")
+        from login import verify_password
+        verify_password()
 
 #Check if user already exists
 def vehicleCheck(username):        
@@ -125,14 +136,28 @@ def vehicleCheck(username):
     cursor.execute(sql, (username,)) #execute the SQL
     result = cursor.fetchone() #store restult in variable
     if result: #if user exists
-        insert_type = input("Would you like to register a car or a bike?: ") #check which function to run
-        if insert_type == "Car" or insert_type == "car":
+        #inquirer generated picklist to determine which register function to execute
+        register_question = [
+            inquirer.List('Register Type',
+                          message = "Are you registering a car or motorbike?",
+                          choices = [ "Car","Motorbike"], #establish picklist
+                ),
+            ]
+    
+        register_answer = inquirer.prompt(register_question)
+        choice = register_answer['Register Type']
+     
+        if choice == "Car":
             registercar(username) #execute function
-        else:
+        elif choice == "Motorbike":
             register_motorbike(username) #execute function
+        else:
+            print("Choice not recognised, please try again.\n") #failed SQL query
+            vehicleCheck(username)
     else:
-        print("Username does not exist") #failed SQL query
-        
+        print("User not known, please try loggin in again.\n")
+        from login import verify_password
+        verify_password()
 
-username = "Admin"
-vehicleCheck(username)
+#username = "Admin"
+#vehicleCheck(username)
