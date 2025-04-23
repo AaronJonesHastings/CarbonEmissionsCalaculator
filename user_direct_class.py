@@ -14,7 +14,7 @@ class direction_picklist():
         petrolDirect = [
             inquirer.List('Petrol Choice',
                           message = "Would you like to log a new emission or log a new average?",
-                          choices = ["Log an emission", "Use a previous average", "Log a new average"]
+                          choices = ["Log an emission", "Use a previous average", "Log a new average", "Go Back"]
                       )
             ]
         user_choice = inquirer.prompt(petrolDirect)
@@ -29,6 +29,8 @@ class direction_picklist():
         elif direction == "Log a new average":
             from APIClass import API
             API.gather_info_call_API(username)
+        elif direction == "Go Back":
+            direction_picklist.page_direction(username)
         else:
             print("Error encountered, invalid choice selected")
             exit
@@ -39,7 +41,7 @@ class direction_picklist():
         dieselDirect = [
             inquirer.List('Diesel Choice',
                           message = "Would you like to log a new emission or log an average?",
-                          choices = ["Log an emission", "Log an average"]
+                          choices = ["Log an emission", "Log an average", "Go Back"]
                       )
             ]
         user_choice = inquirer.prompt(dieselDirect)
@@ -51,9 +53,11 @@ class direction_picklist():
         elif direction == "Log an average":
             from APIClass import API
             API.gather_info_call_API(username)
+        elif direction == "Go Back":
+            direction_picklist.page_direction(username)
         else:
-            print("Error encountered")
-            exit
+            print("Input not recognised, please try again")
+            direction_picklist.page_direction(username)
             
     def motorbikeChoices(username):
         """Contains picklist for navigating motorbike related choices """
@@ -61,7 +65,7 @@ class direction_picklist():
         motorbikeDirect = [
             inquirer.List('Motorbike Choice',
                           message = "Would you like to log a new emission or log an average?",
-                          choices = ["Log an emission", "Log an average"]
+                          choices = ["Log an emission", "Log an average", "Go Back"]
                       )
             ]
         user_choice = inquirer.prompt(motorbikeDirect)
@@ -73,9 +77,11 @@ class direction_picklist():
         elif direction == "Log an average":
             from APIClass import API
             API.gather_info_call_API(username)
+        elif direction == "Go Back":
+            direction_picklist.page_direction(username)
         else:
-            print("Error encountered")
-            exit
+            print("Input not recognised, please try again")
+            direction_picklist.page_direction(username)
     
     def accountChoices(username):
         """Contains picklist for managing a user's account"""
@@ -83,7 +89,7 @@ class direction_picklist():
         accountDirection = [ #initiate list
             inquirer.List('Account Choice', #calls the List class from inquirer
                           message = "Please select an option below", #prompt displayed to the user
-                          choices = ["Change My Password", "Link An Account", "View My Link Requests", "Register a Vehicle"] #choices the user picks from
+                          choices = ["Change My Password", "Link An Account", "View My Link Requests", "Register a Vehicle", "Go Back"] #choices the user picks from
                       ),
             ]
         user_choice = inquirer.prompt(accountDirection) #calls the question and displays it for the user
@@ -100,6 +106,13 @@ class direction_picklist():
         elif direction == "Register a Vehicle":
             from registercar import vehicleCheck #imports the vehicleCheck function from registercar
             vehicleCheck(username)
+        elif direction == "Go Back":
+            direction_picklist.page_direction(username)
+        else:
+            print("Input not recognised, please try again")
+            direction_picklist.page_direction(username)
+            
+        
         
 
     def page_direction(username): #the main menu
@@ -108,7 +121,7 @@ class direction_picklist():
         direct_question = [
                inquirer.List('User Choice',
                              message = "Choose Task:",
-                             choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Log Appliance Emission", "View Emission Graphs", "Manage My Account", "Log Out"]
+                             choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Log Appliance Emission", "View Emission Graphs", "Manage My Account", "Go Back", "Log Out"]
                              #choices above direct users to each major module within the software
                           )
             ]
@@ -129,6 +142,8 @@ class direction_picklist():
             user.selectUserForTrending(username) #call the selectUserForTrending function
         elif direction == "Manage My Account":
             direction_picklist.accountChoices(username) #call the accountChoices sub menu
+        elif direction == "Go Back":
+            direction_picklist.page_direction(username)
         elif direction == "Log Out":
             exit #log out by terminating the application
         else:
