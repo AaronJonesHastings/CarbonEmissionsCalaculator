@@ -213,6 +213,7 @@ class user:
         #set title and labels
         plt.title("Appliance Emissions Trending") #graph title
         plt.xlabel("Date") #x axis label
+        plt.xticks(rotation=45)
         plt.ylabel("Co2 Emissions") #y axis label
         
         plt.grid(True)
@@ -224,6 +225,7 @@ class user:
         plt.plot (vehicleEmissionDates, vehicleEmissions)
         plt.title("Vehicle Emissions Trending")
         plt.xlabel("Date")
+        plt.xticks(rotation=45)
         plt.ylabel("Co2 Emissions")
         plt.grid(True)
         plt.show()
@@ -235,10 +237,13 @@ class user:
         plt.plot (totalEmissionsDates, totalEmissions)
         plt.title("Total Emissions Trending")
         plt.xlabel("Date")
+        plt.xticks(rotation=45)
         plt.ylabel("Co2 Emissions Per Day (kg)")
         style.use("ggplot")
         plt.grid(True)
         plt.show()
+        from user_direct_class import direction_picklist
+        direction_picklist.page_direction(username)
         
     def selectUserForTrending(username):
         import inquirer
@@ -285,7 +290,7 @@ class user:
         import dbConnection
         from datetime import date
         mycursor = dbConnection.db.cursor()
-        """retrieve all emissions from the appliance_logs and car_emissions table"""
+        """retrieve all emissions from the appliance_logs and car_emissions table and store them in separate lists"""
         #create lists for storing emission returns
         global applianceEmissions
         applianceEmissions = []
@@ -297,51 +302,75 @@ class user:
         val = (username,) #val to be used for car and appliance queries
         mycursor.execute(applianceSQL, val,)
         applianceResult = mycursor.fetchall() #store SQL returns
-        #print("Total number of appliance emission records = ", mycursor.rowcount)
+        #print(f"Appliance Results:\n{applianceResult}") #test print
+        #print("Total number of appliance emission records = ", mycursor.rowcount) #test print
 
         #iterate through the result and add to the emissionResults list
         n = 0
         for i in applianceResult:
             applianceEmissions.append(applianceResult[n])
-            n = n+1 
+            n = n+1
+        #print(f"After appending, applianceEmissions =\n{applianceEmissions}")
         #print(applianceEmissions)
 
         #SQL query for car emissions
         vehicleSQL = "SELECT value, date FROM car_emissions WHERE user = %s"
         mycursor.execute(vehicleSQL, val,)
         vehicleResult = mycursor.fetchall()
-        #print("Total number of vehcile emissions = ", mycursor.rowcount)
+        #print(f"Vehicle Result is:\n{vehicleResult}") #test print
+        #print("Total number of vehcile emissions = ", mycursor.rowcount) #test print
 
         #iterate through vehcicle emission returns and store in vehicleEmissions
         n = 0
         for i in vehicleResult:
             vehicleEmissions.append(vehicleResult[n])
             n = n+1
+        #print(f"After appending, vehicleEmissions =\n{vehicleEmissions}") #test print
         #print(vehicleEmissions)
              
         data = vehicleEmissions #store data in separate lists
         #print("Separated Data")
         
-        sorted_data = sorted(data, key=lambda x: x[1])
+        sorted_data = sorted(data, key=lambda x: x[1]) #vehicle data after sorting
         
         vehicleEmissionDates = [item[1] for item in sorted_data] #separate dates from emissions
         vehicleEmissionDates = [date.isoformat(item) for item in vehicleEmissionDates] #format dates appropriately
+        #print(f"Vehicle Emission Dates are:\n{vehicleEmissionDates}") #test print
         
         
-        vehicleEmissions = [item[0] for item in sorted_data]
+        vehicleEmissions = [item[0] for item in sorted_data] #take emission values, not dates
+        #print(f"Vehicle Emissions are:\n{vehicleEmissions}") #test print
         
-        #print(f"Vehicle Emissions = {vehicleEmissions}")
-        #print(f"Vehicle Emission Dates = {vehicleEmissionDates}")
-        
+       
         #repeat above for appliance emissions
         data2 = applianceEmissions
-        sorted_data2 = sorted(data, key=lambda x: x[1])
+        sorted_data2 = sorted(data2, key=lambda x: x[1])
         applianceEmissionDates = [item[1] for item in sorted_data2]
         applianceEmissionDates = [date.isoformat(item) for item in applianceEmissionDates]
         applianceEmissions = [item[0] for item in sorted_data2]
+        #print(f"Appliance emissions are:\n{applianceEmissions}") #test print
+        #print(f"Appliance emission dates are:\n{applianceEmissionDates}") #test print
         
-       #print(f"Appliance emissions = {applianceEmissions}")
-        #print(f"Appliance emission dates = {applianceEmissionDates}")
+
+        
+        """ 
+        #Test merging appliance and vehicle values - no longer needed as this is carried out by the sortAllData function
+        
+        from collections import defaultdict
+        combinedEmissions = defaultdict(float) #used for sorting
+        
+        for d, v in zip(vehicleEmissionDates, vehicleEmissions):
+            combinedEmissions[d] += float(v)
+        
+        for d, a in zip(applianceEmissionDates, applianceEmissions):
+            combinedEmissions[d] += float(a)
+            
+        #now sort
+        mergedResults = sorted(combinedEmissions.items())
+        
+        print(f"Combined Emissions by Date:\n{mergedResults}")
+        
+        """
         
         import inquirer
         from user_direct_class import direction_picklist
@@ -360,15 +389,14 @@ class user:
             user.graphVehicles(username, vehicleEmissions, vehicleEmissionDates)
             direction_picklist.page_direction(username)
         elif choice == "Both":
-            user.graphAppliances(username, applianceEmissions, applianceEmissionDates)
-            user.graphVehicles(username, vehicleEmissions, vehicleEmissionDates)
-            direction_picklist.page_direction(username)
+            user.sortAllData(username)
         else:
             print("Error encountered, choice not recgonised./nPlease try again.")
             direction_picklist.page_direction(username)
             
         
     def sortAllData(username):
+        """ Used To Retrieve and Combine Data From Both Appliances and Vehicles """
         import dbConnection
         import datetime
         from datetime import date
