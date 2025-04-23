@@ -1,3 +1,6 @@
+from random import gammavariate
+
+
 class API:
     def __init__ (self, key):
         self.key = key
@@ -57,17 +60,17 @@ class API:
                         carType for simplicity in coding
                         """
                         if "Petrol" in carType:
-                            print("Petrol dict used")
+                            #print("Petrol dict used") #test print
                             from Dictionaries import petrol_emission_dict
                             carEmission = f"{petrol_emission_dict[carType]['emission_value']}" #retrieve emission value from nested dictionary
                             carEmission = float(carEmission) #store dictionary value as a float
                         elif "Diesel" in carType:
-                            print("Diesel dict used")
+                            #print("Diesel dict used") #test print
                             from Dictionaries import diesel_emission_dict
                             carEmission = f"{diesel_emission_dict[carType]['emission_value']}"
                             carEmission = float(carEmission)
                         else:
-                            print("Mototbike dict used")
+                            #print("Mototbike dict used") #test print
                             from Dictionaries import motorbike_emission_dict
                             carEmission = f"{motorbike_emission_dict[carType]['emission_value']}"
                             carEmission = float(carEmission)
@@ -76,7 +79,7 @@ class API:
                         #Emission algorithm = (distance/mpg) * emission factor
                         fuelUsed = distance_miles / mpg
                         drive_emission = fuelUsed * carEmission
-                        print(f"Total emissions for this drive are {drive_emission}")
+                        print(f"Total emissions for this drive are {drive_emission} CO2e")
                         import inquirer
                         query_save = [
                             inquirer.List('Save Drive',
@@ -93,17 +96,27 @@ class API:
                             val = (username, car_reg, postcode1, postcode2, distance, drive_emission, drive_name)
                             cursor.execute(sql4, val)
                             dbConnection.db.commit()
-                            print(cursor.rowcount, "record inserted")
+                            print("Drive saved")
+                            from user_direct_class import direction_picklist
+                            direction_picklist.page_direction(username)
                         else:
                              exit
                     else:
                         print("You are not the owner of this vehicle, please try again with a car egistered to this account")
+                        from user_direct_class import direction_picklist
+                        direction_picklist.page_direction(username)
                 else:
                     print("Error encountered, please try again")
+                    from user_direct_class import direction_picklist
+                    direction_picklist.page_direction(username)
             else:
                 print("Car not found, please try again")
+                from user_direct_class import direction_picklist
+                direction_picklist.page_direction(username)
         else:
             print("Invalid distance for this journey, please try again with new postcodes")
+            from user_direct_class import direction_picklist
+            direction_picklist.page_direction(username)
 
         #carEmission = f"{petrol_emission_dict[carType]['emission_value']}" #retrieve emission value from nested dictionary
         #carEmission = float(carEmission) #store dictionary value as a float
@@ -142,6 +155,7 @@ class API:
                 
             else:
                 car_reg = car_reg.upper() #make upper case
+                #print(car_reg)
                 #make sure car reg is formatted correctly for SQL query
             
             """ Use geopy to convert postcodes to latitude/longitude values """
@@ -155,21 +169,28 @@ class API:
                 #return (location.longitude, location.latitude)
                 #print(f'{start_location.longitude}, {start_location.latitude}')
                 start_coords = [start_location.longitude, start_location.latitude]
-                print(start_coords)
+                #print(start_coords) #test print for validation
             else:
-                raise ValueError(f"Could not find location for postcode: {starting_postcode}")
+                raise ValueError(f"Could not find location for postcode: {starting_postcode}, please try again")
+                from APIClass import API
+                API.gather_info_call_API(username)
                 exit
             if end_location:
                 #print(f'{end_location.longitude}, {end_location.latitude}')
                 end_coords = [end_location.longitude, end_location.latitude]
-                print(end_coords)
+                #print(end_coords)
             else:
                 raise ValueError(f"Could not find location for postcode: {ending_postcode}")
+                from APIClass import API
+                API.gather_info_call_API(username)
             
             coords = (start_coords, end_coords)
             API.calculate_distance_for_average(starting_postcode, ending_postcode, coords, car_reg, username)
         
         else:
+            print("User not found, please log out try again")
+            from login import verify_password
+            verify_password()
             exit
     
 
@@ -202,11 +223,12 @@ class API:
                 reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list
                 car_reg = reg_list[0]+reg_list[1] #combine both elements
                 car_reg = car_reg.upper() #make upper case
+                #print(f"Car reg after splits is {car_reg}") #testing
                 
             else:
                 car_reg = car_reg.upper() #make upper case
                 #make sure car reg is formatted correctly for SQL query
-            
+                
             """ Use geopy to convert postcodes to latitude/longitude values """
             
             from geopy.geocoders import Nominatim
@@ -218,14 +240,14 @@ class API:
                 #return (location.longitude, location.latitude)
                 #print(f'{start_location.longitude}, {start_location.latitude}')
                 start_coords = [start_location.longitude, start_location.latitude]
-                print(start_coords)
+                #print(start_coords) #test prints
             else:
                 raise ValueError(f"Could not find location for postcode: {starting_postcode}")
                 exit
             if end_location:
                 #print(f'{end_location.longitude}, {end_location.latitude}')
                 end_coords = [end_location.longitude, end_location.latitude]
-                print(end_coords)
+                #print(end_coords) #test prints
             else:
                 raise ValueError(f"Could not find location for postcode: {ending_postcode}")
             coords = (start_coords, end_coords)
@@ -252,25 +274,34 @@ class API:
                 print(f"The estimated distance in miles is {distance_miles}")
                 #now find the vehicle type to import the corret calculator
                 sql_vehicle_type = "SELECT type FROM vehicle_details WHERE registration_number = %s"
-                val = (car_reg, )
+                #print(type(sql_vehicle_type)) #testing
+                val = (car_reg)
+                #print(car_reg) #test print
+                #print(type(val)) #testing
                 mycursor.execute(sql_vehicle_type, (val,))
                 result = mycursor.fetchone()
+                #print(result)
                 if result is not None:
-                    if "petrol" in result:
+                    if "Petrol" in result[0]:
                         from PetrolCarCalculator import car_check
                         car_check(username, distance_miles, car_reg)
-                    elif "motorbike" in result: #run motorbike first in-case of diesel motorbike
+                    elif "Motorbike" in result[0]: #run motorbike first in-case of diesel motorbike
                         from MotorbikeCalculator import motorbike_check
                         motorbike_check(username, distance_miles, car_reg)
-                    elif "diesel" in result:
+                    elif "Diesel" in result[0]:
                         from DieselCarCalculator import car_check
                         car_check(username, distance_miles, car_reg)
                     else:
-                        print("Error encountered, please try again")
+                        print("Car not found, please try again")
+                        from user_direct_class import direction_picklist
+                        direction_picklist.page_direction(username)
                         exit
                 else:
                     print("Error enountered, please try again")
+                    from user_direct_class import direction_picklist
+                    
+                    direction_picklist.page_direction(username)
                     exit
                 
                 
-#API.gather_info_call_API('Admin')
+#API.gather_info_call_API('Admin') #for testing

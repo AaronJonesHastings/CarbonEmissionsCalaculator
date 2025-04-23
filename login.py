@@ -28,7 +28,7 @@ def verify_password(username, login_attempts):
         val = (username,)
         cursor.execute(locked_query, val)
         locked = cursor.fetchone()
-        print(locked)
+        #print(locked) #test print
         if locked == (0,):
             if login_attempts < 3:
                 #username = input("Please enter your username")

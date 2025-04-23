@@ -649,5 +649,6 @@ class user:
         val3 = (username, date_of_emission, car_reg, value)
         cursor.execute(sql3, val3)
         dbConnection.db.commit()
+        print("Emission logged! Returning you to the main menu.")
         from user_direct_class import direction_picklist
         direction_picklist.page_direction(username) #send user back to the main menu

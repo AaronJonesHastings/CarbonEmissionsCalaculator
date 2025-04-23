@@ -62,7 +62,7 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance): #CREATE 
             #mpg = mpg.strip('(),')
             #mpg = mpg.replace("'", "")
             #mpg = float(mpg)
-            print(f"MPG Result = {mpg}")
+            #print(f"MPG Result = {mpg}") #test prints
             
             fuelUsed = distance/mpg
             fuelUsed = float(fuelUsed)
