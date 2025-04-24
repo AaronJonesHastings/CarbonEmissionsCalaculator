@@ -483,10 +483,10 @@ class user:
         val = username,
         cursor.execute(sql, val) #execute the SQL query
         user_result = cursor.fetchall() #store sql result in variable
-        print(user_result)
+        #print(user_result)
         for item in user_result:
             pending_list = [u.strip() for u in item[0].split(',') if u.strip()] #converts string to a list of usernames
-            print(pending_list)
+            #print(pending_list)
             if username2 in pending_list:
                 print(f"Account linkage request awaiting review by {username}")
                 from user_direct_class import direction_picklist
@@ -514,7 +514,7 @@ class user:
                         val2 = (username, username2)
                         cursor.execute(sql2, val2)
                         dbConnection.db.commit()
-                        print(f"Account link request sent to {username} for approval")
+                        print(f"Account link request sent to {username2} for approval")
                         from user_direct_class import direction_picklist
                         print("Please pick an action")
                         direction_picklist.page_direction(username)
