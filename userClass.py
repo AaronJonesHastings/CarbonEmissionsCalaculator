@@ -410,7 +410,7 @@ class user:
         applianceSQL = "SELECT total_emissions, date FROM appliance_logs WHERE user = %s"
         vehicleSQL = "SELECT value, date FROM car_emissions WHERE user = %s"
         #username = ["Admin"] #for test purposes
-        val = username
+        val = (username,)
         #get appliance results
         mycursor.execute(applianceSQL, val)
         applianceResults = mycursor.fetchall()
@@ -611,9 +611,17 @@ class user:
             print(f"You have a pending link request from {item}")
             choice = query_answer['Approve Link']
             if choice == "Yes":
-                    sql = "UPDATE user_details SET linked_accounts = CONCAT(IFNULL(linked_accounts, ''), ', ', %s) WHERE username = %s"
+                    sql = "UPDATE user_details SET linked_accounts = CONCAT(IFNULL(linked_accounts, ''), ', ', %s) WHERE username = %s" #update your own accoun
                     val = (item, username)
                     cursor.execute(sql, val)
+                    dbConnection.db.commit()
+                    sql1 = "UPDATE user_details SET linked_accounts = CONCAT(IFNULL(linked_accounts, ''), ', ', %s) WHERE username = %s" #update the requesting account
+                    val1 = (username, item)
+                    cursor.execute(sql1, val1)
+                    dbConnection.db.commit()
+                    sql2 = "UPDATE user_details SET pending_links = '' WHERE username = %s"
+                    val2 = (username,)
+                    cursor.execute(sql2, val2)
                     dbConnection.db.commit()
         print("Your pending approvals: ")
         print(pending_list)
