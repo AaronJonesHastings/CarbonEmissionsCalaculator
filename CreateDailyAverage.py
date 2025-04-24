@@ -158,7 +158,7 @@ def calculate_average(oven, oven_type, bulb_type, rooms, hours_lit, fridge_size,
             dbConnection.db.commit()
             print(cursor.rowcount, "record inserted")
             from user_direct_class import direction_picklist
-            direction_picklist.page_direction(username)
+            direction_picklist.page_direction(user)
     else:
         print("Error encountered")
 
