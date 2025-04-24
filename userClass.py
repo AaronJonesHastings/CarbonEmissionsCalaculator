@@ -480,13 +480,19 @@ class user:
         username2 = input("Please provide the username of the account you wish to link\n")
         cursor = dbConnection.db.cursor()
         sql = "SELECT pending_links FROM user_details WHERE username = %s"
-        val = username2,
+        val = (username2,)
         cursor.execute(sql, val) #execute the SQL query
         user_result = cursor.fetchall() #store sql result in variable
+        print(user_result)
+        print(type(user_result))
         pending_list = []
         #print(user_result)
         """ No pending links for targeted account"""
-        if not user_result: #i.e. no pending links for specified user so not already requested
+        if not user_result: #i.e. account not found
+            print("Username not found, returning you to the main menu")
+            from user_direct_class import direction_picklist
+            direction_picklist.page_direction(username)
+        elif user_result[0][0] is None: #no pending links
             import inquirer
             query_update = [
                 inquirer.List('Add linked user',
@@ -495,11 +501,11 @@ class user:
                           ),
                 ]
             query_answer = inquirer.prompt(query_update)
-            choice = query_answer(query_update)
+            choice = query_answer['Add linked user']
             if choice == "Yes":
-                sql = "UPDATE user_details SET pending_links = CONCAT(IFNULL(pending_links, ''), ', ', %s) WHERE username = %s" #sending to pending links column to await approval
+                sql = "UPDATE user_details SET pending_links = %s WHERE username = %s" #sending to pending links column to await approval
                 val = (username, username2)
-                cursor.execute(sql2, val2)
+                cursor.execute(sql, val)
                 dbConnection.db.commit()
                 print(f"Account link request sent to {username2} for approval")
                 from user_direct_class import direction_picklist
