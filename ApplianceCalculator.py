@@ -22,7 +22,7 @@ for the UK, taken from the UK government for
 """
 ukIntensity = 0.207074288590604
 
-def upload_average(username,oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emissions):
+def upload_average(username,oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours):
     """
     Receives information from rerieve average and uploads to the mysql server
     using a similar method to CreateDailyAverage.py
