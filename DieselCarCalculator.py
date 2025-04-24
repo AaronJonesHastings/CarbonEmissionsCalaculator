@@ -59,7 +59,7 @@ def carEmissionsCalculation(username, car_reg, car, carType, distance):
             #mpg = mpg.strip('(),')
             #mpg = mpg.replace("'", "")
             #mpg = float(mpg)
-            print(f"MPG Result = {mpg}")
+            #print(f"MPG Result = {mpg}")
             
             fuelUsed = distance/mpg
             fuelUsed = float(fuelUsed)
@@ -166,5 +166,5 @@ def strip_and_replace(variable):
     variable = str(variable).strip('(),')
     variable = variable.replace("'", "")
 
-username = input("Please provide your username: ")
-car_check(username)
+#username = input("Please provide your username: ")
+#car_check(username)

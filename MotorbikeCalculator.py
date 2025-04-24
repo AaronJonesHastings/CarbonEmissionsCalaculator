@@ -109,14 +109,17 @@ def strip_and_replace(variable):
             
 #create the function that checks for if a user has a bike registered against their username
 
-def motorbike_check(username, motorbike_reg, distance):
+def motorbike_check(username, distance, motorbike_reg):
     #motorbike_reg = input("Please enter your bike's registration number: ")
     cursor = dbConnection.db.cursor()
+    """Begin SQL Queries"""
     sql1 = "SELECT registration_number FROM vehicle_details WHERE registration_number = %s" #SQL query to pass
     sql2 = "SELECT owner FROM vehicle_details WHERE registration_number = %s" #SQL query to get owner
     cursor = dbConnection.db.cursor() #get cursor from dbConnection.py
     cursor.execute(sql1, (motorbike_reg,)) #execute the sql1 query
     motorbike_exists = cursor.fetchone() #store sql1 result in variable
+    motorbike_type = motorbike_exists[0]
+    #print(f"Motorbike Type = {motorbike_type}") #testing
     cursor.execute(sql2, (motorbike_reg,)) #execute sql2 query
     owner_check = cursor.fetchone() #store sql2 query in variable
     #print(owner_check) #to test SQL return
@@ -125,7 +128,7 @@ def motorbike_check(username, motorbike_reg, distance):
     #Perform check to see if the motorbike submitted is in the vehicle_details table
     #If yes - pass information to the calculator function
     
-    if type(motorbike_exists) != type(None): #check for none type - if none type then no return from mysql
+    if type(motorbike_type) != type(None): #check for none type - if none type then no return from mysql
         #SQL returns values formatted as ('Username',) so have to check if the variable is contained in the result
         if username in owner_check:
             username = username
@@ -149,5 +152,5 @@ def strip_and_replace(variable):
     variable = str(variable).strip('(),')
     variable = variable.replace("'", "")
 
-username = input("Please provide your username: ")
-motorbike_check(username)
+#username = input("Please provide your username: ")
+#motorbike_check(username)

@@ -133,13 +133,13 @@ class API:
         if result:
             """ Gather Postcodes and Vehicle Reg """
             starting_postcode = input('Please enter your starting postcode: ')
-            if len(starting_postcode) > 7:
+            if len(starting_postcode) > 8:
                 print("Postcode is too long, please try again")
                 exit
             
             ending_postcode = input('Please enter your ending postcode: ')
 
-            if len(ending_postcode) > 7:
+            if len(ending_postcode) > 8:
                 print("Postcode is too long, please try again")
                 exit  
                 
@@ -185,6 +185,7 @@ class API:
                 API.gather_info_call_API(username)
             
             coords = (start_coords, end_coords)
+            from APIClass import API
             API.calculate_distance_for_average(starting_postcode, ending_postcode, coords, car_reg, username)
         
         else:
@@ -205,14 +206,14 @@ class API:
         if result:
             """ Gather Postcodes and Vehicle Reg """
             starting_postcode = input('Please enter your starting postcode: ')
-            if len(starting_postcode) > 7:
-                print("Postcode is too long, please try again")
+            if len(starting_postcode) > 8:
+                print("Starting ostcode is too long, please try again")
                 exit
             
             ending_postcode = input('Please enter your ending postcode: ')
 
-            if len(ending_postcode) > 7:
-                print("Postcode is too long, please try again")
+            if len(ending_postcode) > 8:
+                print("Ending postcode is too long, please try again")
                 exit  
                 
             if len(car_reg) < 7: #if reg too short
@@ -249,7 +250,7 @@ class API:
                 end_coords = [end_location.longitude, end_location.latitude]
                 #print(end_coords) #test prints
             else:
-                raise ValueError(f"Could not find location for postcode: {ending_postcode}")
+                raise ValueError(f"Could not find location for postcode: {ending_postcode}, please try again")
             coords = (start_coords, end_coords)
             import openrouteservice
             from openrouteservice.directions import directions
@@ -282,6 +283,11 @@ class API:
                 result = mycursor.fetchone()
                 #print(result)
                 if result is not None:
+                    """Do check on car_reg to make sure it has not converted to a float then call relevant calculator"""
+                    if not isinstance(car_reg, str):
+                        car_reg = str(car_reg)
+                        #print("Car reg manipulated") #for testing
+                        print(type(car_reg))
                     if "Petrol" in result[0]:
                         from PetrolCarCalculator import car_check
                         car_check(username, distance_miles, car_reg)

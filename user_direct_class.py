@@ -41,7 +41,7 @@ class direction_picklist():
         dieselDirect = [
             inquirer.List('Diesel Choice',
                           message = "Would you like to log a new emission or log an average?",
-                          choices = ["Log an emission", "Log an average", "Go Back"]
+                          choices = ["Log an emission", "Use a previous average", "Log a new average", "Go Back"]
                       )
             ]
         user_choice = inquirer.prompt(dieselDirect)
@@ -50,7 +50,10 @@ class direction_picklist():
             car_reg = input("Please input your car's registration number: ")
             from APIClass import API
             API.API_callout_for_calculator(username, car_reg)
-        elif direction == "Log an average":
+        elif direction == "Use a previous average":
+            from userClass import user
+            user.useVehicleAverage(username)
+        elif direction == "Log a new average":
             from APIClass import API
             API.gather_info_call_API(username)
         elif direction == "Go Back":
@@ -65,7 +68,7 @@ class direction_picklist():
         motorbikeDirect = [
             inquirer.List('Motorbike Choice',
                           message = "Would you like to log a new emission or log an average?",
-                          choices = ["Log an emission", "Log an average", "Go Back"]
+                          choices = ["Log an emission", "Use a previous average", "Log a new average", "Go Back"]
                       )
             ]
         user_choice = inquirer.prompt(motorbikeDirect)
@@ -74,7 +77,10 @@ class direction_picklist():
             motorbike_reg = input("Please input your bike's registration number: ")
             from APIClass import API
             API.API_callout_for_calculator(username, motorbike_reg)
-        elif direction == "Log an average":
+        elif direction == "Use a previous average":
+            from userClass import user
+            user.useVehicleAverage(username)
+        elif direction == "Log a new average":
             from APIClass import API
             API.gather_info_call_API(username)
         elif direction == "Go Back":
@@ -149,9 +155,9 @@ class direction_picklist():
         if direction == "Log Petrol Car Emission":
             direction_picklist.petrolCarChoices(username) #call the petrol car sub menu
         elif direction == "Log Diesel Car Emission":
-            direction_picklist.dieselCarChoices #call the diesel car sub menu
+            direction_picklist.dieselCarChoices(username) #call the diesel car sub menu
         elif direction == "Log Motorbike Emission":
-            direction_picklist.motorbikeChoices #call the motorbike sub menu
+            direction_picklist.motorbikeChoices(username) #call the motorbike sub menu
         elif direction == "Appliance Emissions":
             direction_picklist.appliance_choices(username) #call appliance sub menu
         elif direction == "View Emission Graphs":
