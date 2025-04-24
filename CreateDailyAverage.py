@@ -152,11 +152,13 @@ def calculate_average(oven, oven_type, bulb_type, rooms, hours_lit, fridge_size,
             else:
                 print("You changes have been discarded")
         else:
-            sql = "INSERT INTO daily_averages (user, oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emission) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-            values = (user, oven, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_emissions_calc)
+            sql = "INSERT INTO daily_averages (user, oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emission) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            values = (user, oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_emissions_calc)
             cursor.execute(sql, values)
             dbConnection.db.commit()
             print(cursor.rowcount, "record inserted")
+            from user_direct_class import direction_picklist
+            direction_picklist.page_direction(username)
     else:
         print("Error encountered")
 
@@ -179,7 +181,7 @@ def take_averages(username):
     else:
         oven_type = "electric_oven"
     
-    oven = input("How many hours a day do you use your oven?")
+    oven = input("How many hours a day do you use your oven?\n")
     
     #create picklist for bulb type
     bulb_question = [
@@ -195,8 +197,8 @@ def take_averages(username):
     else:
         bulb_type = "standard_bulb"
     
-    rooms = input("How many rooms do you light in your house? ")
-    hours_lit = input("On average, for how many hours do you keep each room lit for? ")
+    rooms = input("How many rooms do you light in your house?\n")
+    hours_lit = input("On average, for how many hours do you keep each room lit for?\n")
     
     #establish fridge type using picklist
     fridge_question = [
@@ -215,16 +217,16 @@ def take_averages(username):
     else:
         fridge_size = "large_fridge"
     
-    heating_hours = input("How many hours do you heat your home for? ")
-    number_phones = input("How many mobile phones are charged daily in your house? ")
-    pc_hours = input("How many hours a day is a PC or laptpop used in your house? ")
-    tv_hours = input("How many hours a day is a tv used in your house? ")
-    games_console_hours = input("How many hours a day is a games console used in your house? ")
-    washer_hours = input("How many hours a day is a washing machine used in your house? ")
-    dryer_hours = input("How many hours a day is a dryer used in your house? ")
-    dishwasher_hours = input("How many hours a day is a dishwasher used in your house? ")
-    kettle_uses = input("How many times a day is a kettle boiled in your house? ")
-    other_hours = input("How many hours a day, cumulatively, are other appliances used in your house? ")
+    heating_hours = input("How many hours do you heat your home for?\n")
+    number_phones = input("How many mobile phones are charged daily in your house?\n")
+    pc_hours = input("How many hours a day is a PC or laptpop used in your house?\n")
+    tv_hours = input("How many hours a day is a tv used in your house?\n")
+    games_console_hours = input("How many hours a day is a games console used in your house?\n")
+    washer_hours = input("How many hours a day is a washing machine used in your house?\n")
+    dryer_hours = input("How many hours a day is a dryer used in your house?\n")
+    dishwasher_hours = input("How many hours a day is a dishwasher used in your house?\n")
+    kettle_uses = input("How many times a day is a kettle boiled in your house?\n")
+    other_hours = input("How many hours a day, cumulatively, are other appliances used in your house?\n")
     
     
     #call calculation function
@@ -233,5 +235,5 @@ def take_averages(username):
     
 #print("You will be asked a series of questions. We ask that you provide an honest, average account of your daily activity")
 
-username = "BigWizard"
-take_averages(username)
+#username = "BigWizard"
+#take_averages(username)

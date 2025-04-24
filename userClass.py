@@ -300,7 +300,7 @@ class user:
         #SQL query for appliance emission values
         applianceSQL = "SELECT total_emissions, date FROM appliance_logs WHERE user = %s"
         val = (username,) #val to be used for car and appliance queries
-        mycursor.execute(applianceSQL, val,)
+        mycursor.execute(applianceSQL, val)
         applianceResult = mycursor.fetchall() #store SQL returns
         #print(f"Appliance Results:\n{applianceResult}") #test print
         #print("Total number of appliance emission records = ", mycursor.rowcount) #test print
@@ -443,8 +443,8 @@ class user:
             else:
                 non_duplicates.extend(items)
                 
-        print(f"\nDuplicates: {duplicates}")
-        print(f"\nNon-duplicates: {non_duplicates}")
+        #print(f"\nDuplicates: {duplicates}")
+        #print(f"\nNon-duplicates: {non_duplicates}")
         
         
         cleaned_duplicates = []
@@ -454,7 +454,7 @@ class user:
             added_emissions[dates] += value
             
         cleaned_duplicates = [(total, date) for date, total in added_emissions.items()]
-        print(f"\nCleaned duplicates = {cleaned_duplicates}")
+        #print(f"\nCleaned duplicates = {cleaned_duplicates}")
             
         #now concatenate the non-duplicated and cleaned duplicated data together into one list
         data = cleaned_duplicates + non_duplicates
@@ -594,7 +594,7 @@ class user:
         cursor.execute(sql, val)
         #manipulate sql returns into picklist
         drive_list = cursor.fetchall()
-        print(drive_list) #testing
+        #print(drive_list) #testing
         #store the route names and present them as picklist options
         route_names = [] #initiate list to store route names to be accessed by a picklist
         for item in drive_list:

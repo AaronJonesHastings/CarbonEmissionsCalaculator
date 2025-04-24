@@ -4,7 +4,7 @@ import inquirer
 from datetime import date
 import datetime
 
-def validate_input(user_input):
+def validate_input(username, user_input):
     try:
         val = float(user_input)
         if type(val) == float:
@@ -22,7 +22,7 @@ for the UK, taken from the UK government for
 """
 ukIntensity = 0.207074288590604
 
-def upload_average(oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emissions):
+def upload_average(username,oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, heating_hours, number_phones, pc_hours, tv_hours, washer_hours, dryer_hours, dishwasher_hours, games_console_hours, kettle_uses, other_hours, total_daily_emissions):
     """
     Receives information from rerieve average and uploads to the mysql server
     using a similar method to CreateDailyAverage.py
@@ -150,8 +150,12 @@ def upload_average(oven, oven_type, bulb_type, rooms, hours_lit, fridge_size, he
         cursor.execute(sql, val,)
         dbConnection.db.commit()
         print(cursor.rowcount, "record inserted")
+        from user_direct_class import direction_picklist
+        direction_picklist.page_direction(username)
     else:
         print("Error encountered, please try again")
+        from user_direct_class import direction_picklist
+        direction_picklist.page_direction(username)
         
 
 def createEmissionCalculation(username):
@@ -184,7 +188,7 @@ def createEmissionCalculation(username):
         val = username
         cursor.execute(sql, (val,))
         result = cursor.fetchall()
-        print(result)
+        #print(result)
         row = result[0]
         rooms = row[0]
         fridge_size = row[1]
@@ -192,29 +196,29 @@ def createEmissionCalculation(username):
         oven_type = row[3]
         #begin collecting user input and validate that the input is numeric 
         oven = input("For how many hours have you used your oven/stove? ")
-        validate_input(oven)
+        validate_input(username, oven)
         hours_lit = input("For how many hours did you light your house for? ")
-        validate_input(hours_lit)
+        validate_input(username, hours_lit)
         hours_heated = input("For how many hours did you heat your house for? ")
-        validate_input(hours_heated)
+        validate_input(username, hours_heated)
         number_phones = input("How many phones were charged in your house? ")
-        validate_input(number_phones)
+        validate_input(username, number_phones)
         hours_pc = input("For how many hours were PCs used in your house? ")
-        validate_input(hours_pc)
+        validate_input(username, hours_pc)
         hours_tv = input("For how many hours was a TV on in your house? ")
-        validate_input(hours_tv)
+        validate_input(username, hours_tv)
         hours_washer = input("How many hours was a washing machine used for in your house? ")
-        validate_input(hours_washer)
+        validate_input(username, hours_washer)
         hours_dryer = input("How many hours was a dryer used for in your house? ")
-        validate_input(hours_dryer)
+        validate_input(username, hours_dryer)
         hours_dishwasher = input("How many hours was a dishwasher used for in your house? ")
-        validate_input(hours_dishwasher)
+        validate_input(username, hours_dishwasher)
         hours_console = input("For how many hours was a games console used in your house? ")
-        validate_input(hours_console)
+        validate_input(username, hours_console)
         kettle_uses = input("How mnay times was a kettle boiled in your house? ")
-        validate_input(kettle_uses)
+        validate_input(username, kettle_uses)
         hours_other = input("Cummulatively, for how many hours were other appliances used in your house? ")
-        validate_input(hours_other)
+        validate_input(username, hours_other)
 
         #begin calculations
 
@@ -297,7 +301,7 @@ def createEmissionCalculation(username):
 
         """Final Calculation"""
         final_emissions = total_oven + total_bulb + total_fridge + total_heating + total_phones + total_tv + total_console + total_washer + total_dryer + total_dishwasher + total_kettle + total_other #adds all final calculations above
-        print(type(final_emissions))
+        #print(type(final_emissions))
      
         """Import into SQL"""
         sql = "SELECT total_emissions FROM appliance_logs WHERE user = %s AND date = %s"
@@ -322,9 +326,13 @@ def createEmissionCalculation(username):
                 cursor.execute(overrideSql, overrideVals)
                 dbConnection.db.commit()
                 print(cursor.rowcount, "record updated")
+                from user_direct_class import direction_picklist
+                direction_picklist.page_direction(username)
             else:
-                print("Update discarded")
-                exit()
+                print("Emission logging failed")
+                from user_direct_class import direction_picklist
+                direction_picklist.page_direction(username)
+                
 
         else:
             sql = "INSERT INTO appliance_logs (total_emissions, date, oven, lighting, fridge, heating, phones, pc, tv, games_console, washer, dryer, dishwasher, kettle, other, user) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
@@ -403,9 +411,14 @@ def retrieveAverage(username):
     choice = (repeat_answer['repeat_input'])
     if choice == "Yes":
         retrieveAverage(username)
+    elif choice == "No":
+        from user_direct_class import direction_picklist
+        direction_picklist.page_direction(username)
     else:
-        exit
+        print("Choice not recognised, returning you to the main menu")
+        from user_direct_class import direction_picklist
+        direction_picklist.page_direction(username)
         
         
-username = "Admin"
-retrieveAverage(username)
+#username = "Admin"
+#retrieveAverage(username)

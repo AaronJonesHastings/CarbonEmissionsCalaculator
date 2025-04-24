@@ -112,16 +112,34 @@ class direction_picklist():
             print("Input not recognised, please try again")
             direction_picklist.page_direction(username)
             
-        
-        
-
+    def appliance_choices (username): #logging appliance averages and ad-hoc logs
+        import inquirer
+        direct_question = [
+            inquirer.List('Appliance Choice',
+                          message = "Are you making a new average or logging an emission?",
+                          choices = ["Making a New Average", "Logging a New Emission"]
+                          )
+            ]
+        user_choice = inquirer.prompt(direct_question)
+        direction = user_choice['Appliance Choice']
+        if direction == "Making a New Average":
+            from CreateDailyAverage import take_averages
+            take_averages(username)
+        elif direction == "Logging a New Emission":
+            from ApplianceCalculator import retrieveAverage
+            retrieveAverage(username)
+        else:
+            print("Choice not recognised, please try again")
+            from user_direct_class import direction_picklist
+            direction_picklist.page_direction(username)
+    
     def page_direction(username): #the main menu
         """Contains picklist for navigating around major modules"""
         import inquirer
         direct_question = [
                inquirer.List('User Choice',
                              message = "Choose Task:",
-                             choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Log Appliance Emission", "View Emission Graphs", "Manage My Account", "Go Back", "Log Out"]
+                             choices = ["Log Petrol Car Emission", "Log Diesel Car Emission", "Log Motorbike Emission", "Appliance Emissions", "View Emission Graphs", "Manage My Account", "Go Back", "Log Out"]
                              #choices above direct users to each major module within the software
                           )
             ]
@@ -134,9 +152,8 @@ class direction_picklist():
             direction_picklist.dieselCarChoices #call the diesel car sub menu
         elif direction == "Log Motorbike Emission":
             direction_picklist.motorbikeChoices #call the motorbike sub menu
-        elif direction == "Log Appliance Emission":
-            from ApplianceCalculator import retrieveAverage
-            retrieveAverage(username) #call the retrieveAverage function
+        elif direction == "Appliance Emissions":
+            direction_picklist.appliance_choices(username) #call appliance sub menu
         elif direction == "View Emission Graphs":
             from userClass import user #import the user class
             user.selectUserForTrending(username) #call the selectUserForTrending function
