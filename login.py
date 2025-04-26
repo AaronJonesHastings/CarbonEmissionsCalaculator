@@ -43,9 +43,19 @@ def verify_password(username, login_attempts):
                     #now verify the password against the stored hash
                     if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
                         print("Password Accepted")
+                        """Small bit of code to greet the user with their name"""
+                        name_sql = "SELECT forename FROM user_details WHERE username = %s" #pull forename from SQL table
+                        name_val = (username,) #qualifier for SQL
+                        cursor.execute(name_sql, name_val) #execute SQL
+                        forename = cursor.fetchone() #pull forename
+                        #clean forname before printing
+                        forename = str(forename).strip('(),')
+                        forename = forename.replace("'", "")
+                        print(f"Welcome back {forename}!") #print greeting
+                        #direct user to main menu using direction_picklist class
                         from user_direct_class import direction_picklist
                         direction_picklist.page_direction(username)
-                        return True #decrypt successful
+                        #return True #decrypt successful
                     else:
                         print("Password Not Accepted")
                         login_attempts = login_attempts + 1

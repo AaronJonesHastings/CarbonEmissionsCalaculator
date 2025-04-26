@@ -168,6 +168,17 @@ class direction_picklist():
         elif direction == "Go Back":
             direction_picklist.page_direction(username)
         elif direction == "Log Out":
+            #pull username for goodbye
+            import dbConnection
+            cursor = dbConnection.db.cursor()
+            sql = "SELECT forename FROM user_details WHERE username = %s"
+            val = (username,)
+            cursor.execute(sql, val) #execute SQL
+            forename = cursor.fetchone() #pull forename
+            #clean forname before printing
+            forename = str(forename).strip('(),')
+            forename = forename.replace("'", "")
+            print(f"Come back soon, {forename}!") #print greeting
             exit #log out by terminating the application
         else:
             print("Error Encountered")

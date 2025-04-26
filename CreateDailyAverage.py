@@ -1,6 +1,5 @@
 #estbalish variables for take_avergaes function to reference
 
-from wsgiref import validate
 import inquirer
 
 global username
@@ -234,7 +233,7 @@ def take_averages(username):
         fridge_size = "large_fridge"
     
     #heating_hours = input("How many hours do you heat your home for?\n")
-    heating_hours = validate_input("How many hours do you heat your home for?")    
+    heating_hours = validate_input("How many hours do you heat your home for?\n")    
     #number_phones = input("How many mobile phones are charged daily in your house?\n")
     number_phones = validate_input("How many mobile phones are charged daily in your house?\n")
     #pc_hours = input("How many hours a day is a PC or laptpop used in your house?\n")
