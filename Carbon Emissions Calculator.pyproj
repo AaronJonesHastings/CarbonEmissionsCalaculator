@@ -26,11 +26,9 @@
   <ItemGroup>
     <Compile Include="APIClass.py" />
     <Compile Include="ApplianceCalculator.py" />
-    <Compile Include="vehicleClass.py" />
     <Compile Include="userClass.py" />
     <Compile Include="CreateDailyAverage.py" />
     <Compile Include="graphing.py" />
-    <Compile Include="hashingAndSalting.py" />
     <Compile Include="dbConnection.py" />
     <Compile Include="Dictionaries.py" />
     <Compile Include="login.py" />
