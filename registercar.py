@@ -16,7 +16,7 @@ def register_motorbike(username):
        bike_reg = input("Please provide your motorbike's registration number:\n")
        if len(bike_reg) < 7: #if reg too short
             print("Bike registration too short, please enter again.\n")
-            exit
+            register_motorbike(username)
        elif len(bike_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
             reg_list = []
             reg_list = bike_reg.split() #split reg in the middle (using the space) and store both parts in a list
@@ -44,7 +44,7 @@ def register_motorbike(username):
             float(mpg)
        except ValueError:
             print("MPG value must be numeric.\nPlease try again.\n")
-            exit
+            register_motorbike(username)
        owner = username
        mycursor = dbConnection.db.cursor()
        sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, mpg, owner) VALUES (%s, %s, %s, %s, %s, %s, %s)"
@@ -73,7 +73,7 @@ def registercar(username):
         car_reg = car_reg.upper()
         if len(car_reg) < 7: #if reg too short
             print("Car registration too short, please enter again.\n")
-            exit
+            registercar(username)
         elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
             reg_list = []
             reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list
@@ -114,7 +114,7 @@ def registercar(username):
             float(mpg)
         except ValueError:
             print("MPG value must be numeric.\nPlease try again.\n")
-            exit
+            registercar(username)
         mycursor = dbConnection.db.cursor()
         sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, mpg, owner) VALUES (%s, %s, %s, %s, %s, %s, %s)"
         val = (car_reg, car_make, car_model, car_type, petrol_type, mpg, owner)

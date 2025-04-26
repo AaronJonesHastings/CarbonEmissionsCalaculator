@@ -121,7 +121,7 @@ def car_check(username, distance, car_reg):
     #car_reg = input("Please enter your car's registration number: ")
     if len(car_reg) < 7: #if reg too short
         print("Car registration too short, please enter again")
-        exit
+        return car_check(username, distance, car_reg)
     elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
         reg_list = []
         reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list

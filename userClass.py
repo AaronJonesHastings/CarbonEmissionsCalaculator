@@ -145,10 +145,10 @@ class user:
                     direction_picklist.page_direction(username)
             else:
                 print("Your answer does not match our reords. Please contact support for further assistance, or try again.")
-                exit
+                import main
         else:
             print("No user found, please try again")
-            exit
+            import main
             
     def unlockAccount(username):
         import dbConnection

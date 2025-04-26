@@ -100,7 +100,8 @@ class API:
                             from user_direct_class import direction_picklist
                             direction_picklist.page_direction(username)
                         else:
-                             exit
+                             from user_direct_class import direction_picklist
+                             direction_picklist.page_direction(username)
                     else:
                         print("You are not the owner of this vehicle, please try again with a car egistered to this account")
                         from user_direct_class import direction_picklist
@@ -135,18 +136,18 @@ class API:
             starting_postcode = input('Please enter your starting postcode: ')
             if len(starting_postcode) > 8:
                 print("Postcode is too long, please try again")
-                exit
+                API.gather_info_call_API(username)
             
             ending_postcode = input('Please enter your ending postcode: ')
 
             if len(ending_postcode) > 8:
                 print("Postcode is too long, please try again")
-                exit  
+                API.gather_info_call_API(username) 
                 
             car_reg = input('Please enter the registration number of your vehicle: ')
             if len(car_reg) < 7: #if reg too short
                 print("Car registration too short, please enter again")
-                exit
+                API.gather_info_call_API(username)
             elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
                 reg_list = []
                 reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list
@@ -174,7 +175,7 @@ class API:
                 raise ValueError(f"Could not find location for postcode: {starting_postcode}, please try again")
                 from APIClass import API
                 API.gather_info_call_API(username)
-                exit
+                
             if end_location:
                 #print(f'{end_location.longitude}, {end_location.latitude}')
                 end_coords = [end_location.longitude, end_location.latitude]
@@ -191,8 +192,7 @@ class API:
         else:
             print("User not found, please log out try again")
             from login import verify_password
-            verify_password()
-            exit
+            verify_password(username)
     
 
 
@@ -208,17 +208,17 @@ class API:
             starting_postcode = input('Please enter your starting postcode: ')
             if len(starting_postcode) > 8:
                 print("Starting ostcode is too long, please try again")
-                exit
+                API.API_callout_for_calculator(username, car_reg)
             
             ending_postcode = input('Please enter your ending postcode: ')
 
             if len(ending_postcode) > 8:
                 print("Ending postcode is too long, please try again")
-                exit  
+                API.API_callout_for_calculator(username, car_reg)  
                 
             if len(car_reg) < 7: #if reg too short
                 print("Car registration too short, please enter again")
-                exit
+                API.API_callout_for_calculator(username, car_reg)
             elif len(car_reg) > 7: #reg too long - break down the reg, remove the space, and combine again
                 reg_list = []
                 reg_list = car_reg.split() #split reg in the middle (using the space) and store both parts in a list
@@ -244,13 +244,16 @@ class API:
                 #print(start_coords) #test prints
             else:
                 raise ValueError(f"Could not find location for postcode: {starting_postcode}")
-                exit
+                from user_direct_class import direction_picklist
+                direction_picklist.page_direction(username)
             if end_location:
                 #print(f'{end_location.longitude}, {end_location.latitude}')
                 end_coords = [end_location.longitude, end_location.latitude]
                 #print(end_coords) #test prints
             else:
                 raise ValueError(f"Could not find location for postcode: {ending_postcode}, please try again")
+                from user_direct_class import direction_picklist
+                direction_picklist.page_direction(username)
             coords = (start_coords, end_coords)
             import openrouteservice
             from openrouteservice.directions import directions
@@ -301,13 +304,11 @@ class API:
                         print("Car not found, please try again")
                         from user_direct_class import direction_picklist
                         direction_picklist.page_direction(username)
-                        exit
                 else:
                     print("Error enountered, please try again")
                     from user_direct_class import direction_picklist
                     
                     direction_picklist.page_direction(username)
-                    exit
                 
                 
 #API.gather_info_call_API('Admin') #for testing

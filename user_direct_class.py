@@ -33,7 +33,7 @@ class direction_picklist():
             direction_picklist.page_direction(username)
         else:
             print("Error encountered, invalid choice selected")
-            exit
+            direction_picklist.petrolCarChoices(username)
             
     def dieselCarChoices(username):
         """Contains picklist for navigating petrol car related choices """

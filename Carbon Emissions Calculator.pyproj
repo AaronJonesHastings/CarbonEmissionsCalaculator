@@ -26,6 +26,7 @@
   <ItemGroup>
     <Compile Include="APIClass.py" />
     <Compile Include="ApplianceCalculator.py" />
+    <Compile Include="main.py" />
     <Compile Include="userClass.py" />
     <Compile Include="CreateDailyAverage.py" />
     <Compile Include="dbConnection.py" />

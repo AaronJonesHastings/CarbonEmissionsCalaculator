@@ -4,13 +4,9 @@ global login_attempts
 
 #get user details at login
 
-username = input("Please enter your username: ")
+#username = input("Please enter your username: ")
 
-login_attempts = 0 #locks account when login_attempts = 3
-
-def generate_session_id():
-    import uuid
-    return str(uuid.uuid4())
+#login_attempts = 0 #locks account when login_attempts = 3
 
 #define the variable to verify the password
 def verify_password(username, login_attempts):
@@ -83,10 +79,10 @@ def verify_password(username, login_attempts):
                     from userClass import user
                     user.unlockAccount(username)
                 elif account_choice == "Close application":
-                    exit
+                    exit()
                 else:
                     print("Error encountered, please attempt to login again, or contact support")
-                    exit
+                    take_username()
 
         else:
             print("Your account is locked, please contact support or use the forgotten password function")
@@ -107,7 +103,7 @@ def verify_password(username, login_attempts):
                 from userClass import user
                 user.unlockAccount(username)
             elif account_choice == "Close application":
-                exit
+                exit()
                 
     else:
         import inquirer
@@ -126,6 +122,9 @@ def verify_password(username, login_attempts):
             from userSignUp import userSignUp
             userSignUp()
         else:
-            exit
-
-verify_password(username, login_attempts)
+            return
+            
+def take_username():
+    username = input("Please enter your username: ")
+    login_attempts = 0 #locks account when login_attempts = 3
+    return verify_password(username, login_attempts)
