@@ -37,9 +37,9 @@ def register_motorbike(username):
        
        #store answer
        bike_answer = inquirer.prompt(bike_question)
-       petrol_type = "Petrol"
+       petrol_type = "Petrol" #almost all bikes in UK use petrol
        bike_type = (bike_answer['Bike Type'])
-       mpg = input("Please provide the mpg value for your car.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car:\n")
+       mpg = input("Please provide the mpg value for your bike.\nIf you are unsure this can be viewed here: https://www.fuelly.com/car:\n")
        try:
             float(mpg)
        except ValueError:
@@ -50,7 +50,7 @@ def register_motorbike(username):
        sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, mpg, owner) VALUES (%s, %s, %s, %s, %s, %s, %s)"
        val = (bike_reg, bike_make, bike_model, bike_type, petrol_type, mpg, owner)
        mycursor.execute(sql, val)
-       dbConnection.db.commit()
+       dbConnection.db.commit() #confrim insertion to SQL table
        print(mycursor.rowcount, "record inserted")
        import user_direct_class
        direction_picklist.page_direction(username)
@@ -86,7 +86,7 @@ def registercar(username):
         #establish input questions for vehicle and petrol types
         car_question = [
             inquirer.List('Vehicle Type',
-                      message = "Please select your vehicle type from the list",
+                      message = "Please select your vehicle type from the list", #values below correspond to entries in the python dictionaries.
                       choices =[ "Small Car - Petrol", "Medium Car - Petrol", "Large Car - Petrol", "Average Car - Petrol", "Mini - Petrol",
                                 "Supermini - Petrol", "Executive - Petrol", "Sports - Petrol", "Dual Purpose 4X4 - Petrol", "MPV - Petrol",
                                 "Small Car - Diesel", "Medium Car - Diesel", "Large Car - Diesel", "Average Car - Diesel", "Mini - Diesel",
@@ -117,7 +117,7 @@ def registercar(username):
             registercar(username)
         mycursor = dbConnection.db.cursor()
         sql = "INSERT INTO vehicle_details (registration_number, make, model, type, petrol_type, mpg, owner) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        val = (car_reg, car_make, car_model, car_type, petrol_type, mpg, owner)
+        val = (car_reg, car_make, car_model, car_type, petrol_type, mpg, owner) #parameterised queries to prevent SQL injections
         mycursor.execute(sql, val)
         dbConnection.db.commit()
         print(mycursor.rowcount, "record inserted\n")

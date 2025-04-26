@@ -5,8 +5,7 @@
     <ProjectGuid>91c31db6-2beb-478c-bcb2-552637310f1f</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>
-    </StartupFile>
+    <StartupFile>main.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>

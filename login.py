@@ -12,18 +12,18 @@ global login_attempts
 def verify_password(username, login_attempts):
     #login_attempts = 0
     import getpass
-    password = getpass.getpass("Please enter your password: ")
+    password = getpass.getpass("Please enter your password:\n") #getpass used to blank out password during entry
     cursor = dbConnection.db.cursor()
-    exists_check = "SELECT username FROM user_details WHERE username = %s"
+    exists_check = "SELECT username FROM user_details WHERE username = %s" #confirm user exists
     val = (username,)
     cursor.execute(exists_check, val)
-    result = cursor.fetchone()
+    result = cursor.fetchone() #result in SQL table
     if result:
-        lockout = 0
-        locked_query = "SELECT locked FROM user_details WHERE username = %s"
+        lockout = 0 #set lockout value to 0 and initiate the lockout variable
+        locked_query = "SELECT locked FROM user_details WHERE username = %s" #confirm account is not locked
         val = (username,)
         cursor.execute(locked_query, val)
-        locked = cursor.fetchone()
+        locked = cursor.fetchone() #store result of locked query
         #print(locked) #test print
         if locked == (0,):
             if login_attempts < 3:
@@ -38,7 +38,7 @@ def verify_password(username, login_attempts):
                     stored_hash = result[0].encode('utf-8') #get hash in bytes
                     #now verify the password against the stored hash
                     if bcrypt.checkpw(password.encode('utf-8'), stored_hash):
-                        print("Password Accepted")
+                        print("Password Accepted\n")
                         """Small bit of code to greet the user with their name"""
                         name_sql = "SELECT forename FROM user_details WHERE username = %s" #pull forename from SQL table
                         name_val = (username,) #qualifier for SQL
@@ -53,14 +53,15 @@ def verify_password(username, login_attempts):
                         direction_picklist.page_direction(username)
                         #return True #decrypt successful
                     else:
-                        print("Password Not Accepted")
+                        print("Password Not Accepted\n")
                         login_attempts = login_attempts + 1
                         print(f"New login attempts value = {login_attempts}")
                         return verify_password(username, login_attempts) #decrpyt failed
                 else:
-                    print("User Not Found")
+                    print("User Not Found\n")
                     return False #no match in user_details table
             else:
+                #following lines direct user to fixing their lockout based on the choices they select
                 print("Your account is locked, please contact support or use the forgotten password function")
                 import inquirer
                 lockout_question = [
@@ -81,11 +82,11 @@ def verify_password(username, login_attempts):
                 elif account_choice == "Close application":
                     exit()
                 else:
-                    print("Error encountered, please attempt to login again, or contact support")
+                    print("Error encountered, please attempt to login again, or contact support\n")
                     take_username()
 
         else:
-            print("Your account is locked, please contact support or use the forgotten password function")
+            print("Your account is locked, please contact support or use the forgotten password function\n")
             import inquirer
             lockout_question = [
                 inquirer.List ('Unlock Choices',
@@ -110,7 +111,7 @@ def verify_password(username, login_attempts):
         #determine if user's average should be used for the day's emission calculation
         create_question = [
             inquirer.List ('create_account',
-                           message = "User does not exists, would you like to create an account?",
+                           message = "User does not exist, would you like to create an account?\n",
                            choices = [ "Yes", "No"],
             ),
         ]
@@ -125,6 +126,6 @@ def verify_password(username, login_attempts):
             return
             
 def take_username():
-    username = input("Please enter your username: ")
+    username = input("Please enter your username:\n")
     login_attempts = 0 #locks account when login_attempts = 3
     return verify_password(username, login_attempts)
