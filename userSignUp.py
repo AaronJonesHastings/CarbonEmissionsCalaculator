@@ -27,11 +27,12 @@ def userSignUp():
             username = input("Please enter a username: ")
             is_valid = all(( #check all consitions are met
                 len(username) > 7, #check character length is at least 8
-                len(username) < 20 #check character length is no greater than 20
+                len(username) <= 20, #check character length is no greater than 20
+                username.isalnum() #check only alphanumeric characters are present.
             ))
             if is_valid:
                 break
-            print("Username must be between 8 and 20 charcaters long. Please try again. \n")
+            print("Username must be between 8 and 20 charcaters long and cannot contain special characters. Please try again. \n")
     #Check if user already exists
     cursor = dbConnection.db.cursor() #get cursor from dbConnection.py
     sql = "SELECT username FROM user_details WHERE username = %s" #SQL query to pass
